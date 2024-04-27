@@ -1,0 +1,15 @@
+[database]
+    host="localhost"
+    port=5432
+    user="steven"
+    password="12345678"
+    db_name="7Zero_db"
+
+[api]
+    url="192.168.100.41:8888"
+
+[redis]
+    address="localhost:6379"
+    password=""
+    db="steven"
+

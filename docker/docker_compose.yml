@@ -1,0 +1,20 @@
+version: '1'
+
+services:
+  db:
+    image: sevenzero_postgresql:1.0
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+    mem_limit: 512m
+    restart: always
+
+  testredis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    mem_limit: 128m
+    restart: always
