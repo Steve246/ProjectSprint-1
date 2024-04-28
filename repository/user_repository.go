@@ -20,18 +20,17 @@ type userRepository struct {
 
 func (u *userRepository) FindPasswordByEmail(email string) (model.User, error) {
 	var user model.User
-	result := u.db.Where("email=?", email).Find(&user)
+	result := u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
 
-	if err := result.Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return user, nil
 		} else {
-			return user, err
+			return user, result.Error
 		}
 	}
 
 	return user, nil
-
 }
 
 func (u *userRepository) Create(newData interface{}) error {
@@ -41,15 +40,15 @@ func (u *userRepository) Create(newData interface{}) error {
 
 func (u *userRepository) FindByEmail(email string) bool {
 	var user model.User
-	result := u.db.First(&user, "email = ?", email).Error
-	if errors.Is(result, gorm.ErrRecordNotFound) {
+	result := u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return false
 	}
 	return true
 }
 
 func (u *userRepository) FindBy(selected interface{}, by interface{}) error {
-	result := u.db.Where(by).First(selected)
+	result := u.db.Raw("SELECT * FROM users WHERE ?", by).Scan(selected)
 	return result.Error
 }
 
