@@ -14,6 +14,8 @@ import (
 type UserRegistrationUsecase interface {
 	RequestRegist(reqRegistBody dto.RequestRegistBody) error
 	VerifyRegist(verifyRegistBody dto.VerifyRegistBody) error
+
+	RegistUser(reqRegistBody dto.RequestRegistBody) error
 }
 
 type userRegistrationUsecase struct {
@@ -21,6 +23,59 @@ type userRegistrationUsecase struct {
 	userRepo     repository.UserRepository
 	mailRepo     repository.MailRepository
 	passWordRepo repository.PasswordRepository
+}
+
+func (p *userRegistrationUsecase) RegistUser(reqUserData dto.RequestRegistBody) error {
+
+	// validation check request body
+
+	err := p.userRepo.ValidateUser(reqUserData.Email, reqUserData.Name, reqUserData.Password)
+	if err != nil {
+		return err
+	}
+
+	// validation check email ada gak di DB
+
+	found := p.userRepo.FindByEmail(reqUserData.Email)
+
+	if found {
+		return utils.DataDuplicateError()
+	}
+
+	// insert data
+
+	// Hash the password
+
+	hashedPasswordStr, errHashed := p.passWordRepo.HashAndSavePassword(reqUserData.Password)
+
+	// hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registBody.Password), bcrypt.DefaultCost)
+	if errHashed != nil {
+		return utils.InvalidTypeFormat()
+	}
+
+	// Convert hashedPassword from []byte to string
+	// hashedPasswordStr := string(hashedPassword)
+
+	// bikin time baru
+
+	currentTime := time.Now()
+	timeString := currentTime.Format("2006-01-02 15:04:05")
+
+	// disini kita akan bikin user baru
+	newUser := model.User{
+		Name:             reqUserData.Name,
+		Email:            reqUserData.Email,
+		Password:         hashedPasswordStr,
+		RegistrationDate: timeString,
+		// kita gak bikin balance, karena itu harus di create sendiri sama user
+	}
+
+	if err := p.userRepo.Create(&newUser); err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func (p *userRegistrationUsecase) RequestRegist(reqRegistBody dto.RequestRegistBody) error {
@@ -52,7 +107,7 @@ func (p *userRegistrationUsecase) RequestRegist(reqRegistBody dto.RequestRegistB
 
 func (p *userRegistrationUsecase) VerifyRegist(verifyRegistBody dto.VerifyRegistBody) error {
 	savedRegistBody, err := p.otpRepo.FetchOtp(verifyRegistBody.Otp)
-	fmt.Println(savedRegistBody)
+	// fmt.Println(savedRegistBody)
 	if err != nil {
 		return utils.WrongOtpError()
 	}
@@ -61,7 +116,7 @@ func (p *userRegistrationUsecase) VerifyRegist(verifyRegistBody dto.VerifyRegist
 	if err != nil {
 		return err
 	}
-	fmt.Println(registBody)
+	// fmt.Println(registBody)
 
 	// hashed password
 

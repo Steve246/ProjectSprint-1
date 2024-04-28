@@ -51,23 +51,6 @@ func Server() *appServer {
 	}
 }
 
-// func initRouterConfiguration() *gin.Engine {
-// 	gin.SetMode(gin.ReleaseMode)
-// 	router := gin.Default()
-// 	router.Use(corsConfiguration())
-// 	return router
-// }
-
-// func corsConfiguration() gin.HandlerFunc {
-// 	return cors.New(cors.Config{
-// 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-// 		AllowAllOrigins:  true,
-// 		AllowHeaders:     []string{"Origin", "Date", "Content-Length", "Content-Type", "Content-Disposition", "Accept", "X-Requested-With", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization", "token"},
-// 		AllowCredentials: false,
-// 		MaxAge:           12 * time.Hour,
-// 	})
-// }
-
 func (a *appServer) initControllers() {
 	// buat daftarin controller ada disini
 	// setiap controller, isinya harus ada isian dari usecaseManager

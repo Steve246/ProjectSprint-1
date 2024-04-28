@@ -20,18 +20,22 @@ type UserController struct {
 	api.BaseApi
 }
 
-// FIXME: error di regis & login
+// FIXME: Regis sama Login gak pake OTP
 
-func (u *UserController) requestRegist(c *gin.Context) {
+// TODO: tambain error code
+
+func (u *UserController) userRegister(c *gin.Context) {
 	var bodyRequest dto.RequestRegistBody
 
 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 	} else {
-		fmt.Printf("ini isi bodyRequest --> %s", bodyRequest.Email)
-		err := u.ucRegist.RequestRegist(bodyRequest)
+		// fmt.Printf("ini isi bodyRequest --> %s", bodyRequest.Email)
+		err := u.ucRegist.RegistUser(bodyRequest)
+		fmt.Print(err)
 		if err != nil {
 			u.Failed(c, err)
 			return
@@ -40,22 +44,41 @@ func (u *UserController) requestRegist(c *gin.Context) {
 	}
 }
 
-func (u *UserController) verifyRegist(c *gin.Context) {
-	var verifOtpBody dto.VerifyRegistBody
+// func (u *UserController) requestRegist(c *gin.Context) {
+// 	var bodyRequest dto.RequestRegistBody
 
-	if err := u.ParseRequestBody(c, &verifOtpBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-	} else {
-		err := u.ucRegist.VerifyRegist(verifOtpBody)
-		if err != nil {
-			u.Failed(c, err)
-			return
-		}
-		u.Success(c, nil)
-	}
-}
+// 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
+// 		fmt.Print("Masuk sini")
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": err.Error(),
+// 		})
+// 	} else {
+// 		// fmt.Printf("ini isi bodyRequest --> %s", bodyRequest.Email)
+// 		err := u.ucRegist.RequestRegist(bodyRequest)
+// 		if err != nil {
+// 			u.Failed(c, err)
+// 			return
+// 		}
+// 		u.Success(c, nil)
+// 	}
+// }
+
+// func (u *UserController) verifyRegist(c *gin.Context) {
+// 	var verifOtpBody dto.VerifyRegistBody
+
+// 	if err := u.ParseRequestBody(c, &verifOtpBody); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": err.Error(),
+// 		})
+// 	} else {
+// 		err := u.ucRegist.VerifyRegist(verifOtpBody)
+// 		if err != nil {
+// 			u.Failed(c, err)
+// 			return
+// 		}
+// 		u.Success(c, nil)
+// 	}
+// }
 
 func (u *UserController) requestLogin(c *gin.Context) {
 	var bodyRequest dto.RequestLoginBody
@@ -103,8 +126,10 @@ func NewUserController(router *gin.RouterGroup, routerDev *gin.RouterGroup, ucLo
 	}
 
 	// USER REGISTER AND LOGIN
-	router.POST("/register/otp", controller.verifyRegist)
-	router.POST("/register", controller.requestRegist)
+	// router.POST("/register/otp", controller.verifyRegist)
+	// router.POST("/register", controller.requestRegist)
+
+	router.POST("/v1/user/register", controller.userRegister)
 
 	router.POST("/login", controller.requestLogin)
 	router.POST("/login/otp", controller.verifyLogin)
