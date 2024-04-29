@@ -20,9 +20,7 @@ type UserController struct {
 	api.BaseApi
 }
 
-// FIXME: Regis sama Login gak pake OTP
-
-// TODO: tambain error code
+// TODO: tambain cara login
 
 func (u *UserController) userRegister(c *gin.Context) {
 	var bodyRequest dto.RequestRegistBody
