@@ -2,6 +2,7 @@ package repository
 
 import (
 	"7Zero4/model"
+	"7Zero4/utils"
 	"errors"
 	"regexp"
 	"strings"
@@ -23,31 +24,31 @@ type userRepository struct {
 
 func (u *userRepository) ValidateUser(email string, name string, password string) error {
 	if email == "" {
-		return errors.New("email cannot be null")
+		return utils.ErrEmailNull
 	}
 
 	emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
 	match, _ := regexp.MatchString(emailRegex, email)
 	if !match {
-		return errors.New("invalid email format")
+		return utils.ErrInvalidEmail
 	}
 
 	// Check if name is not null and length is between 5 and 50
 	if name == "" {
-		return errors.New("name cannot be null")
+		return utils.ErrNameNull
 	}
 	nameLength := len(strings.TrimSpace(name))
 	if nameLength < 5 || nameLength > 50 {
-		return errors.New("name must be between 5 and 50 characters")
+		return utils.ErrInvalidName
 	}
 
 	// Check if password is not null and length is between 5 and 15
 	if password == "" {
-		return errors.New("password cannot be null")
+		return utils.ErrPasswordNull
 	}
 	passwordLength := len(password)
 	if passwordLength < 5 || passwordLength > 15 {
-		return errors.New("password must be between 5 and 15 characters")
+		return utils.ErrInvalidPassword
 	}
 
 	return nil
@@ -76,7 +77,7 @@ func (u *userRepository) Create(newData interface{}) error {
 func (u *userRepository) FindByEmail(email string) bool {
 	var user model.User
 	result := u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	if result.RowsAffected == 0 {
 		return false
 	}
 	return true

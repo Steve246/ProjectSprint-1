@@ -4,7 +4,7 @@ import (
 	"7Zero4/delivery/api"
 	"7Zero4/model/dto"
 	"7Zero4/usecase"
-	"fmt"
+	"7Zero4/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,21 +27,44 @@ type UserController struct {
 func (u *UserController) userRegister(c *gin.Context) {
 	var bodyRequest dto.RequestRegistBody
 
-	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
-
+	// Parse the request body into bodyRequest
+	if err := c.ShouldBindJSON(&bodyRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+			"errorCode": "400",
+			"message":   "Bad Request: request body is empty or in wrong format",
 		})
-	} else {
-		// fmt.Printf("ini isi bodyRequest --> %s", bodyRequest.Email)
-		err := u.ucRegist.RegistUser(bodyRequest)
-		fmt.Print(err)
-		if err != nil {
-			u.Failed(c, err)
+		return
+	}
+
+	err := u.ucRegist.RegistUser(bodyRequest)
+	if err != nil {
+		// Check if the error is from RegisUser usecase
+		if utils.IsValidationError(err) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"errorCode": "400",
+				"message":   "RegisUser Error: " + err.Error(),
+			})
 			return
 		}
-		u.Success(c, nil)
+		// Handle StatusInternalServerError (500)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"errorCode": "500",
+			"message":   "Internal Server Error: " + err.Error(),
+		})
+		return
 	}
+
+	successData := dto.SuccessRegistBody{
+		Email: bodyRequest.Email,
+		Name:  bodyRequest.Name,
+		// TODO: ini bikin token logic, sementara masih dummy
+		AccessToken: "qwertyuiopasdfghjklzxcvbnm", // This should be the actual access token
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"Message": "User registered successfully",
+		"data":    successData,
+	})
 }
 
 // func (u *UserController) requestRegist(c *gin.Context) {

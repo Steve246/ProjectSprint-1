@@ -29,17 +29,19 @@ func (p *userRegistrationUsecase) RegistUser(reqUserData dto.RequestRegistBody) 
 
 	// validation check request body
 
-	err := p.userRepo.ValidateUser(reqUserData.Email, reqUserData.Name, reqUserData.Password)
-	if err != nil {
-		return err
+	errValidate := p.userRepo.ValidateUser(reqUserData.Email, reqUserData.Name, reqUserData.Password)
+	if errValidate != nil {
+		return errValidate
 	}
 
 	// validation check email ada gak di DB
 
 	found := p.userRepo.FindByEmail(reqUserData.Email)
 
+	fmt.Println("ini found --> ", found)
+
 	if found {
-		return utils.DataDuplicateError()
+		return utils.ErrDuplicateValueFound
 	}
 
 	// insert data

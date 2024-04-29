@@ -1,9 +1,15 @@
 package dto
 
 type RequestRegistBody struct {
-	Name     string `json:"userName"`
-	Email    string `json:"userEmail"`
-	Password string `json:"userPassword"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+type SuccessRegistBody struct {
+	Email       string `json:"email"`
+	Name        string `json:"name"`
+	AccessToken string `json:"accessToken"`
 }
 
 type VerifyRegistBody struct {

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -14,6 +15,46 @@ type AppError struct {
 func (e AppError) Error() string {
 	return fmt.Sprintf("type: %d, code: %s, err: %s", e.ErrorType, e.ErrorCode, e.ErrorMessage)
 }
+
+// error code baru
+
+var (
+	ErrEmailNull           = errors.New("email cannot be null")
+	ErrInvalidEmail        = errors.New("invalid email format")
+	ErrNameNull            = errors.New("name cannot be null")
+	ErrInvalidName         = errors.New("name must be between 5 and 50 characters")
+	ErrPasswordNull        = errors.New("password cannot be null")
+	ErrInvalidPassword     = errors.New("password must be between 5 and 15 characters")
+	ErrDuplicateValueFound = errors.New("duplicate Email is found")
+)
+
+func IsValidationError(err error) bool {
+	return errors.Is(err, ErrEmailNull) ||
+		errors.Is(err, ErrInvalidEmail) ||
+		errors.Is(err, ErrNameNull) ||
+		errors.Is(err, ErrInvalidName) ||
+		errors.Is(err, ErrPasswordNull) ||
+		errors.Is(err, ErrInvalidPassword) ||
+		errors.Is(err, ErrDuplicateValueFound)
+}
+
+func EmailDuplicate() error {
+	return AppError{
+		ErrorCode:    "409",
+		ErrorMessage: "Email found inside Database",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func ValidationError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Email found inside Database",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+// error code lama
 
 func RequiredError() error {
 	return AppError{
