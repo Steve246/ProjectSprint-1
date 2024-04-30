@@ -29,7 +29,7 @@ func (p *userRegistrationUsecase) RegistUser(reqUserData dto.RequestRegistBody) 
 
 	// validation check request body
 
-	errValidate := p.userRepo.ValidateUser(reqUserData.Email, reqUserData.Name, reqUserData.Password)
+	errValidate := p.userRepo.ValidateUser(reqUserData.Email, reqUserData.Name, reqUserData.Password, "register")
 	if errValidate != nil {
 		return errValidate
 	}

@@ -44,7 +44,6 @@ func (c *Config) readConfig() {
 	c.TokenConfig = TokenConfig{ApplicationName: "7ZeroPlatform", JwtSigningMethod: jwt.SigningMethodHS256, JwtSignatureKey: []byte("7ZEROFOUR")}
 
 	// mail config
-	// TODO bikin email buat jadi sender disini
 	c.MailConfig = MailConfig{CONFIG_SMTP_HOST: "smtp.gmail.com", CONFIG_SMTP_PORT: 587, CONFIG_SENDER_NAME: "7Zero4 Application Authentication <josteven246@gmail.com>", CONFIG_AUTH_EMAIL: "josteven246@gmail.com", CONFIG_AUTH_PASSWORD: "flwgmmuyahipuhux"}
 
 	// flwgmmuyahipuhux

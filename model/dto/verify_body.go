@@ -1,5 +1,11 @@
 package dto
 
+type SuccessLoginBody struct {
+	Email       string `json:"userEmail"`
+	Password    string `json:"userPassword"`
+	AccessToken string `json:"accessToken"`
+}
+
 type RequestLoginBody struct {
 	Email    string `json:"userEmail"`
 	Password string `json:"userPassword"`
@@ -7,8 +13,7 @@ type RequestLoginBody struct {
 
 type VerifyLoginBody struct {
 	Email string `json:"userEmail"`
-
-	Otp string
+	Otp   string
 }
 
 type VerifyLoginBodyResponse struct {
