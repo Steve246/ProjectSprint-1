@@ -16,6 +16,8 @@ import (
 type UserLoginUseCase interface {
 	VerifyLoginOtp(reLoginBody dto.VerifyLoginBody) (dto.VerifyLoginBodyResponse, error)
 	RequestLogin(rqLoginBody dto.RequestLoginBody) error
+
+	LoginUser(reqLoginBody dto.RequestLoginBody) error
 }
 
 type userLoginUsecase struct {
@@ -26,12 +28,48 @@ type userLoginUsecase struct {
 	passWordRepo repository.PasswordRepository
 }
 
+func (u *userLoginUsecase) LoginUser(reqLoginBody dto.RequestLoginBody) error {
+
+	errValidate := u.userRepo.ValidateUser(reqLoginBody.Email, "", reqLoginBody.Password, "login")
+	if errValidate != nil {
+		return errValidate
+	}
+
+	// errEmail := u.userRepo.FindByEmail(reqLoginBody.Email)
+	// // equivalent to errEmail != true
+	// if !errEmail {
+	// 	return utils.ErrEmailCannotFound
+	// }
+
+	// cek apakah user udh register, atau blm, kalau blm error
+	var selected model.User
+	err := u.userRepo.FindBy(&selected, model.User{Email: reqLoginBody.Email})
+	if err != nil {
+		return utils.ErrUserNotFound
+	}
+
+	dbPass, errdbPass := u.userRepo.FindPasswordByEmail(reqLoginBody.Email)
+
+	if errdbPass != nil {
+		return utils.ErrPasswordCannotFound
+	}
+
+	errPassword := u.passWordRepo.VerifyPassword([]byte(dbPass.Password), []byte(reqLoginBody.Password))
+
+	if errPassword != nil {
+		return utils.ErrPasswordNotMatch
+	}
+
+	return nil
+
+}
+
 func (u *userLoginUsecase) RequestLogin(rqLoginBody dto.RequestLoginBody) error {
 
 	errEmail := u.userRepo.FindByEmail(rqLoginBody.Email)
 	// equivalent to errEmail != true
 	if !errEmail {
-		return utils.DataNotFoundError()
+		return utils.DataDuplicateError()
 	}
 
 	dbPass, errdbPass := u.userRepo.FindPasswordByEmail(rqLoginBody.Email)

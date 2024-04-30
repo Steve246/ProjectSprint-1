@@ -19,6 +19,8 @@ func (e AppError) Error() string {
 // error code baru
 
 var (
+
+	// REGISTER
 	ErrEmailNull           = errors.New("email cannot be null")
 	ErrInvalidEmail        = errors.New("invalid email format")
 	ErrNameNull            = errors.New("name cannot be null")
@@ -26,6 +28,15 @@ var (
 	ErrPasswordNull        = errors.New("password cannot be null")
 	ErrInvalidPassword     = errors.New("password must be between 5 and 15 characters")
 	ErrDuplicateValueFound = errors.New("duplicate Email is found")
+
+	// LOGIN
+
+	ErrEmailCannotFound    = errors.New("email cannot be found")
+	ErrPasswordCannotFound = errors.New("password cannot be found")
+
+	ErrPasswordNotMatch = errors.New("password not match")
+
+	ErrUserNotFound = errors.New("user not found")
 )
 
 func IsValidationError(err error) bool {

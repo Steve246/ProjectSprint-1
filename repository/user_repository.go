@@ -15,43 +15,81 @@ type UserRepository interface {
 	Register(newData model.User) error
 	FindByEmail(email string) bool
 	FindBy(selected interface{}, by interface{}) error
-	ValidateUser(email string, name string, password string) error
+	ValidateUser(email string, name string, password string, user string) error
 }
 
 type userRepository struct {
 	db *gorm.DB
 }
 
-func (u *userRepository) ValidateUser(email string, name string, password string) error {
-	if email == "" {
-		return utils.ErrEmailNull
+func (u *userRepository) ValidateUser(email string, name string, password string, user string) error {
+
+	if user == "register" {
+		if email == "" {
+			return utils.ErrEmailNull
+		}
+
+		emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
+		match, _ := regexp.MatchString(emailRegex, email)
+		if !match {
+			return utils.ErrInvalidEmail
+		}
+
+		// Check if name is not null and length is between 5 and 50
+		if name == "" {
+			return utils.ErrNameNull
+		}
+		nameLength := len(strings.TrimSpace(name))
+		if nameLength < 5 || nameLength > 50 {
+			return utils.ErrInvalidName
+		}
+
+		// Check if password is not null and length is between 5 and 15
+		if password == "" {
+			return utils.ErrPasswordNull
+		}
+		passwordLength := len(password)
+		if passwordLength < 5 || passwordLength > 15 {
+			return utils.ErrInvalidPassword
+		}
+
+		return nil
 	}
 
-	emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
-	match, _ := regexp.MatchString(emailRegex, email)
-	if !match {
-		return utils.ErrInvalidEmail
-	}
+	if user == "login" {
+		if email == "" {
+			return utils.ErrEmailNull
+		}
 
-	// Check if name is not null and length is between 5 and 50
-	if name == "" {
-		return utils.ErrNameNull
-	}
-	nameLength := len(strings.TrimSpace(name))
-	if nameLength < 5 || nameLength > 50 {
-		return utils.ErrInvalidName
-	}
+		emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
+		match, _ := regexp.MatchString(emailRegex, email)
+		if !match {
+			return utils.ErrInvalidEmail
+		}
 
-	// Check if password is not null and length is between 5 and 15
-	if password == "" {
-		return utils.ErrPasswordNull
-	}
-	passwordLength := len(password)
-	if passwordLength < 5 || passwordLength > 15 {
-		return utils.ErrInvalidPassword
+		// Check if name is not null and length is between 5 and 50
+		// if name == "" {
+		// 	return utils.ErrNameNull
+		// }
+		// nameLength := len(strings.TrimSpace(name))
+		// if nameLength < 5 || nameLength > 50 {
+		// 	return utils.ErrInvalidName
+		// }
+
+		// Check if password is not null and length is between 5 and 15
+		if password == "" {
+			return utils.ErrPasswordNull
+		}
+		passwordLength := len(password)
+		if passwordLength < 5 || passwordLength > 15 {
+			return utils.ErrInvalidPassword
+		}
+
+		return nil
 	}
 
 	return nil
+
 }
 
 func (u *userRepository) FindPasswordByEmail(email string) (model.User, error) {

@@ -19,6 +19,70 @@ type UserController struct {
 	api.BaseApi
 }
 
+// TODO: tambain cara login
+
+func (u *UserController) userLogin(c *gin.Context) {
+	var bodyRequest dto.RequestLoginBody
+
+	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errorCode": "400",
+			"message":   "Bad Request: request body is empty or in wrong format",
+		})
+	} else {
+		err := u.ucLogin.RequestLogin(bodyRequest)
+
+		if err != nil {
+			// Check if the error is from RegisUser usecase
+			if utils.IsValidationError(err) {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"errorCode": "400",
+					"message":   "RegisUser Error: " + err.Error(),
+				})
+				return
+			}
+
+			if err == utils.ErrEmailCannotFound {
+
+				c.JSON(http.StatusBadRequest, gin.H{
+					"errorCode": "400",
+					"message":   "LoginUser Error: " + err.Error(),
+				})
+				return
+
+			}
+
+			if err == utils.ErrUserNotFound {
+
+				c.JSON(http.StatusBadRequest, gin.H{
+					"errorCode": "404",
+					"message":   "LoginUser Error: " + err.Error(),
+				})
+				return
+
+			}
+			// Handle StatusInternalServerError (500)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"errorCode": "500",
+				"message":   "Internal Server Error: " + err.Error(),
+			})
+			return
+		}
+
+		successData := dto.SuccessLoginBody{
+			Email:    bodyRequest.Email,
+			Password: bodyRequest.Password,
+			// TODO: ini bikin token logic, sementara masih dummy
+			AccessToken: "qwertyuiopasdfghjklzxcvbnm", // This should be the actual access token
+		}
+
+		c.JSON(http.StatusCreated, gin.H{
+			"Message": "User registered successfully",
+			"data":    successData,
+		})
+	}
+}
+
 func (u *UserController) userRegister(c *gin.Context) {
 	var bodyRequest dto.RequestRegistBody
 
@@ -29,7 +93,7 @@ func (u *UserController) userRegister(c *gin.Context) {
 			"message":   "Bad Request: request body is empty or in wrong format",
 		})
 		return
-	}
+	} else {
 
 	token, err := u.ucRegist.RegisterUser(bodyRequest)
 	if err != nil {
@@ -56,7 +120,7 @@ func (u *UserController) userRegister(c *gin.Context) {
 			"errorCode": "500",
 			"message":   "Internal Server Error: " + err.Error(),
 		})
-		return
+
 	}
 
 	successData := dto.SuccessRegistBody{
@@ -74,36 +138,36 @@ func (u *UserController) userRegister(c *gin.Context) {
 func (u *UserController) requestLogin(c *gin.Context) {
 	var bodyRequest dto.RequestLoginBody
 
-	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-	} else {
-		err := u.ucLogin.RequestLogin(bodyRequest)
-		if err != nil {
-			u.Failed(c, err)
-			return
-		}
-		u.Success(c, nil)
-	}
-}
+// 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": err.Error(),
+// 		})
+// 	} else {
+// 		err := u.ucLogin.RequestLogin(bodyRequest)
+// 		if err != nil {
+// 			u.Failed(c, err)
+// 			return
+// 		}
+// 		u.Success(c, nil)
+// 	}
+// }
 
-func (u *UserController) verifyLogin(c *gin.Context) {
-	var verifOtpBody dto.VerifyLoginBody
+// func (u *UserController) verifyLogin(c *gin.Context) {
+// 	var verifOtpBody dto.VerifyLoginBody
 
-	if err := u.ParseRequestBody(c, &verifOtpBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-	} else {
-		bodyResponse, err := u.ucLogin.VerifyLoginOtp(verifOtpBody)
-		if err != nil {
-			u.Failed(c, err)
-			return
-		}
-		u.Success(c, bodyResponse)
-	}
-}
+// 	if err := u.ParseRequestBody(c, &verifOtpBody); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": err.Error(),
+// 		})
+// 	} else {
+// 		bodyResponse, err := u.ucLogin.VerifyLoginOtp(verifOtpBody)
+// 		if err != nil {
+// 			u.Failed(c, err)
+// 			return
+// 		}
+// 		u.Success(c, bodyResponse)
+// 	}
+// }
 
 func NewUserController(router *gin.RouterGroup, routerDev *gin.RouterGroup, ucLogin usecase.UserLoginUseCase, ucRegist usecase.UserRegistrationUsecase) *UserController {
 	controller := UserController{
@@ -122,8 +186,10 @@ func NewUserController(router *gin.RouterGroup, routerDev *gin.RouterGroup, ucLo
 
 	router.POST("/v1/user/register", controller.userRegister)
 
-	router.POST("/login", controller.requestLogin)
-	router.POST("/login/otp", controller.verifyLogin)
+	router.POST("/v1/user/login", controller.userLogin)
+
+	// router.POST("/login", controller.requestLogin)
+	// router.POST("/login/otp", controller.verifyLogin)
 
 	return &controller
 }
