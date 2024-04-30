@@ -31,14 +31,14 @@ func (u *UserController) userLogin(c *gin.Context) {
 			"message":   "Bad Request: request body is empty or in wrong format",
 		})
 	} else {
-		err := u.ucLogin.RequestLogin(bodyRequest)
+		err := u.ucLogin.LoginUser(bodyRequest)
 
 		if err != nil {
 			// Check if the error is from RegisUser usecase
 			if utils.IsValidationError(err) {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"errorCode": "400",
-					"message":   "RegisUser Error: " + err.Error(),
+					"message":   "LoginUser Error: " + err.Error(),
 				})
 				return
 			}
