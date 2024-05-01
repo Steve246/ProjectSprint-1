@@ -18,18 +18,19 @@ type Response struct {
 }
 
 type ResponseSuccess struct {
-	Data interface{} `json:"data,omitempty"`
+	Message interface{} `json:"message,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
-func NewSuccessMessage(data interface{}) (httpStatusCode int, apiResponse ResponseSuccess) {
+func NewSuccessMessage(data interface{}, detailMsg interface{}) (httpStatusCode int, apiResponse ResponseSuccess) {
 	// status := Status{
 	// 	ResponseCode:    SuccessCode,
 	// 	ResponseMessage: SuccessMessage,
 	// }
 	httpStatusCode = http.StatusOK
 	apiResponse = ResponseSuccess{
-		// Status: status,
-		Data: data,
+		Message: detailMsg,
+		Data:    data,
 	}
 	return
 }

@@ -27,8 +27,8 @@ func (j *JsonResponse) Send() {
 	j.c.JSON(j.httpStatusCode, j.response)
 }
 
-func NewSuccessJsonResponse(c *gin.Context, data interface{}) AppHttpResponse {
-	httpStatusCode, resp := NewSuccessMessage(data)
+func NewSuccessJsonResponse(c *gin.Context, data interface{}, detailMsg interface{}) AppHttpResponse {
+	httpStatusCode, resp := NewSuccessMessage(data, detailMsg)
 	return &JsonResponseSuccess{
 		c,
 		httpStatusCode,

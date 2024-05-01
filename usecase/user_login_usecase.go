@@ -37,7 +37,7 @@ func (u *userLoginUsecase) LoginUser(reqLoginBody dto.RequestLoginBody) error {
 
 	dbPass, errdbPass := u.userRepo.FindPasswordByEmail(reqLoginBody.Email)
 
-	fmt.Println("ini error dari findPasswordByEmail --> ", errdbPass)
+	// fmt.Println("ini error dari findPasswordByEmail --> ", errdbPass)
 	if errdbPass != nil {
 		return utils.UserNotFoundError()
 	}

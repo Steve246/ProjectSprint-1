@@ -30,13 +30,13 @@ func (p *userRegistrationUsecase) RegisterUser(reqUserData dto.RequestRegistBody
 	// validation check email already registered
 	exist := p.userRepo.FindByEmail(reqUserData.Email)
 	if exist {
-		return "", utils.ErrDuplicateValueFound
+		return "", utils.EmailFoundError()
 	}
 
 	// Hash the password
 	hashedPasswordStr, errHashed := p.passWordRepo.HashAndSavePassword(reqUserData.Password)
 	if errHashed != nil {
-		return "", utils.InvalidTypeFormat()
+		return "", utils.PasswordCannotBeEncodeError()
 	}
 
 	// Get token auth

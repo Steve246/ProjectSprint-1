@@ -28,9 +28,9 @@ func (b *BaseApi) ParseRequestFormData(c *gin.Context, requestModel interface{},
 	return nil
 }
 
-func (b *BaseApi) Success(c *gin.Context, data interface{}) {
+func (b *BaseApi) Success(c *gin.Context, data interface{}, detailMsg interface{}) {
 	// response.NewSuccessJsonResponse(c, data).Send()
-	response.NewSuccessJsonResponse(c, data).Send()
+	response.NewSuccessJsonResponse(c, data, detailMsg).Send()
 }
 
 func (b *BaseApi) Failed(c *gin.Context, err error) {
