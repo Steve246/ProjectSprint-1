@@ -16,8 +16,6 @@ func (e AppError) Error() string {
 	return fmt.Sprintf("type: %d, code: %s, err: %s", e.ErrorType, e.ErrorCode, e.ErrorMessage)
 }
 
-// error code baru
-
 var (
 
 	// REGISTER
@@ -52,17 +50,7 @@ func IsErrDuplicateValueFound(err error) bool {
 	return errors.Is(err, ErrDuplicateValueFound)
 }
 
-// ini yg baru
-
 // register
-
-func PasswordCannotBeEncodeError() error {
-	return AppError{
-		ErrorCode:    "400",
-		ErrorMessage: "Password cannot be encode",
-		ErrorType:    http.StatusBadRequest,
-	}
-}
 
 func NameFoundError() error {
 	return AppError{
@@ -97,6 +85,14 @@ func ServerError() error {
 }
 
 // login
+
+func PasswordCannotBeEncodeError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Password cannot be encode",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
 
 func UserNotFoundError() error {
 	return AppError{
