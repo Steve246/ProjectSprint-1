@@ -19,56 +19,113 @@ type UserController struct {
 	api.BaseApi
 }
 
+// TODO: tambain cara login
+
+func (u *UserController) userLogin(c *gin.Context) {
+	var bodyRequest dto.RequestLoginBody
+
+	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+	} else {
+		err := u.ucLogin.LoginUser(bodyRequest)
+
+		if err != nil {
+			// Check if the error is from RegisUser usecase
+			if utils.IsValidationError(err) {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"errorCode": "400",
+					"message":   "LoginUser Error: " + err.Error(),
+				})
+				return
+			}
+
+			if err == utils.ErrEmailCannotFound {
+
+				c.JSON(http.StatusBadRequest, gin.H{
+					"errorCode": "400",
+					"message":   "LoginUser Error: " + err.Error(),
+				})
+				return
+
+			}
+
+			if err == utils.ErrUserNotFound {
+
+				c.JSON(http.StatusBadRequest, gin.H{
+					"errorCode": "404",
+					"message":   "LoginUser Error: " + err.Error(),
+				})
+				return
+
+			}
+			// Handle StatusInternalServerError (500)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"errorCode": "500",
+				"message":   "Internal Server Error: " + err.Error(),
+			})
+			return
+		}
+
+		successData := dto.SuccessLoginBody{
+			Email:    bodyRequest.Email,
+			Password: bodyRequest.Password,
+			// TODO: ini bikin token logic, sementara masih dummy
+			AccessToken: "qwertyuiopasdfghjklzxcvbnm", // This should be the actual access token
+		}
+
+		c.JSON(http.StatusCreated, gin.H{
+			"Message": "User registered successfully",
+			"data":    successData,
+		})
+	}
+}
+
 func (u *UserController) userRegister(c *gin.Context) {
 	var bodyRequest dto.RequestRegistBody
 
 	// Parse the request body into bodyRequest
 	if err := c.ShouldBindJSON(&bodyRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"errorCode": "400",
-			"message":   "Bad Request: request body is empty or in wrong format",
-		})
-		return
-	}
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": err.Error(),
+		// })
+		utils.ServerError()
 
-	token, err := u.ucRegist.RegisterUser(bodyRequest)
-	if err != nil {
-		// Email conflict exist
-		if utils.IsErrDuplicateValueFound(err) {
-			c.JSON(http.StatusConflict, gin.H{
-				"errorCode": "409",
-				"message":   "Email already registered",
-			})
-			return
+	} else {
+
+		err := u.ucRegist.RegistUser(bodyRequest)
+
+		if err != nil {
+			// Check if the error is from RegisUser usecase
+			if err != nil {
+				u.Failed(c, err)
+				return
+			}
+			// Handle StatusInternalServerError (500)
+			utils.ServerError()
 		}
 
-		// Validation Error
-		if utils.IsValidationError(err) {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"errorCode": "400",
-				"message":   "Register user error: " + err.Error(),
-			})
-			return
+		successData := dto.SuccessRegistBody{
+			Email: bodyRequest.Email,
+			Name:  bodyRequest.Name,
+			// TODO: ini bikin token logic, sementara masih dummy
+			AccessToken: "qwertyuiopasdfghjklzxcvbnm", // This should be the actual access token
 		}
 
-		// Handle StatusInternalServerError (500)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"errorCode": "500",
-			"message":   "Internal Server Error: " + err.Error(),
-		})
-		return
-	}
+		// c.JSON(http.StatusCreated, gin.H{
+		// 	"Message": "User logged successfully",
+		// 	"data":    successData,
+		// })
 
-	successData := dto.SuccessRegistBody{
-		Email:       bodyRequest.Email,
-		Name:        bodyRequest.Name,
-		AccessToken: token,
-	}
+		data := gin.H{
+			"Message": "User logged successfully",
+			"data":    successData,
+		}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"Message": "User registered successfully",
-		"data":    successData,
-	})
+		u.Success(c, data)
+
+	}
 }
 
 func (u *UserController) requestLogin(c *gin.Context) {

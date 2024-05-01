@@ -19,6 +19,8 @@ func (e AppError) Error() string {
 // error code baru
 
 var (
+
+	// REGISTER
 	ErrEmailNull           = errors.New("email cannot be null")
 	ErrInvalidEmail        = errors.New("invalid email format")
 	ErrNameNull            = errors.New("name cannot be null")
@@ -26,6 +28,15 @@ var (
 	ErrPasswordNull        = errors.New("password cannot be null")
 	ErrInvalidPassword     = errors.New("password must be between 5 and 15 characters")
 	ErrDuplicateValueFound = errors.New("duplicate Email is found")
+
+	// LOGIN
+
+	ErrEmailCannotFound    = errors.New("email cannot be found")
+	ErrPasswordCannotFound = errors.New("password cannot be found")
+
+	ErrPasswordNotMatch = errors.New("password not match")
+
+	ErrUserNotFound = errors.New("user not found")
 )
 
 func IsValidationError(err error) bool {
@@ -35,6 +46,61 @@ func IsValidationError(err error) bool {
 		errors.Is(err, ErrInvalidName) ||
 		errors.Is(err, ErrPasswordNull) ||
 		errors.Is(err, ErrInvalidPassword)
+
+}
+
+// ini yg baru
+
+// register
+
+func PasswordCannotBeEncodeError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Password cannot be encode",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func NameFoundError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Name found inside Database",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func EmailFoundError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Email found inside Database",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func ReqBodyNotValidError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Didn't pass Validation",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func ServerError() error {
+	return AppError{
+		ErrorCode:    "500",
+		ErrorMessage: "Server Error",
+		ErrorType:    http.StatusInternalServerError,
+	}
+}
+
+// login
+
+func UserNotFoundError() error {
+	return AppError{
+		ErrorCode:    "404",
+		ErrorMessage: "User Not Found",
+		ErrorType:    http.StatusInternalServerError,
+	}
 }
 
 func IsErrDuplicateValueFound(err error) bool {
