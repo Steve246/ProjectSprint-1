@@ -6,6 +6,7 @@ type UsecaseManager interface {
 	RegistUsecase() usecase.UserRegistrationUsecase
 	TokenUsecase() usecase.TokenUsecase
 	LoginUsecase() usecase.UserLoginUseCase
+	CatUsecase() usecase.CatUseCase
 }
 
 type usecaseManager struct {
@@ -23,6 +24,10 @@ func (u *usecaseManager) TokenUsecase() usecase.TokenUsecase {
 
 func (u *usecaseManager) LoginUsecase() usecase.UserLoginUseCase {
 	return usecase.NewUserLoginUsecase(u.repoManager.OtpRepo(), u.repoManager.TokenRepo(), u.repoManager.UserRepo(), u.repoManager.MailRepo(), u.repoManager.PasswordRepo())
+}
+
+func (u *usecaseManager) CatUsecase() usecase.CatUseCase {
+	return usecase.NewCatUsecase(u.repoManager.CatRepo())
 }
 
 func NewUsecaseManager(repoManager RepositoryManager) UsecaseManager {

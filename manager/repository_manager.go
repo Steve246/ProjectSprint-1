@@ -8,6 +8,7 @@ type RepositoryManager interface {
 	OtpRepo() repository.OtpRepository
 	MailRepo() repository.MailRepository
 	TokenRepo() repository.TokenRepository
+	CatRepo() repository.CatRepository
 }
 
 type repositoryManager struct {
@@ -20,6 +21,10 @@ func (r *repositoryManager) PasswordRepo() repository.PasswordRepository {
 
 func (r *repositoryManager) UserRepo() repository.UserRepository {
 	return repository.NewUserRepository(r.infra.SqlDb())
+}
+
+func (r *repositoryManager) CatRepo() repository.CatRepository {
+	return repository.NewCatRepository(r.infra.SqlDb())
 }
 
 func (r *repositoryManager) OtpRepo() repository.OtpRepository {

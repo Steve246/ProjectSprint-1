@@ -12,7 +12,7 @@ import (
 
 type UserRepository interface {
 	FindPasswordByEmail(email string) (model.User, error)
-	Register(newData model.User) error
+	Register(data model.User) error
 	FindByEmail(email string) bool
 	FindBy(selected interface{}, by interface{}) error
 	ValidateUser(email string, name string, password string, user string) error

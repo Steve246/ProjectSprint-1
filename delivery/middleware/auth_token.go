@@ -32,6 +32,7 @@ func checkBypassAPI(c *gin.Context) bool {
 		"/api/register/otp",
 		"/api/v1/user/register",
 		"/api/v1/user/login",
+		"/api/v1/cat", // remove this later (only testing)
 	}
 
 	for _, v := range bypassAPI {

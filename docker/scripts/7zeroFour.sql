@@ -21,3 +21,13 @@ CREATE TABLE authentication(
 	token_auth varchar(255),
 	expire TIMESTAMP WITHOUT TIME ZONE
 );
+
+CREATE TABLE cat(
+	id SERIAL PRIMARY KEY,
+	cat_name varchar(30),
+	cat_race varchar(40),
+	cat_sex varchar(6),
+	cat_age int,
+	description varchar(200),
+	image varchar(1000)
+);

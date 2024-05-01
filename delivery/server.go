@@ -54,7 +54,7 @@ func Server() *appServer {
 func (a *appServer) initControllers() {
 	// buat daftarin controller ada disini
 	// setiap controller, isinya harus ada isian dari usecaseManager
-	controller.NewUserController(a.router, a.routerDev, a.usecaseManager.LoginUsecase(), a.usecaseManager.RegistUsecase())
+	controller.NewUserController(a.router, a.routerDev, a.usecaseManager.LoginUsecase(), a.usecaseManager.RegistUsecase(), a.usecaseManager.CatUsecase())
 }
 
 func (a *appServer) Run() {
