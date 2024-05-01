@@ -27,8 +27,7 @@ func (u *UserController) userLogin(c *gin.Context) {
 
 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errorCode": "400",
-			"message":   "Bad Request: request body is empty or in wrong format",
+			"message": err.Error(),
 		})
 	} else {
 		err := u.ucLogin.LoginUser(bodyRequest)
@@ -89,11 +88,11 @@ func (u *UserController) userRegister(c *gin.Context) {
 
 	// Parse the request body into bodyRequest
 	if err := c.ShouldBindJSON(&bodyRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"errorCode": "400",
-			"message":   "Bad Request: request body is empty or in wrong format",
-		})
-		return
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": err.Error(),
+		// })
+		utils.ServerError()
+
 	} else {
 
 	token, err := u.ucRegist.RegisterUser(bodyRequest)

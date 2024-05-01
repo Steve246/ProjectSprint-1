@@ -54,7 +54,23 @@ func IsErrDuplicateValueFound(err error) bool {
 
 // ini yg baru
 
-// login
+// register
+
+func PasswordCannotBeEncodeError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Password cannot be encode",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func NameFoundError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Name found inside Database",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
 
 func EmailFoundError() error {
 	return AppError{
@@ -80,7 +96,7 @@ func ServerError() error {
 	}
 }
 
-// password
+// login
 
 func UserNotFoundError() error {
 	return AppError{
