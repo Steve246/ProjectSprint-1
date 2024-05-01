@@ -22,7 +22,7 @@ type userRegistrationUsecase struct {
 func (p *userRegistrationUsecase) RegisterUser(reqUserData dto.RequestRegistBody) (string, error) {
 
 	// validation check request body
-	errValidate := p.userRepo.ValidateUser(reqUserData.Email, reqUserData.Name, reqUserData.Password)
+	errValidate := p.userRepo.ValidateUser(reqUserData.Email, reqUserData.Name, reqUserData.Password, "register")
 	if errValidate != nil {
 		return "", errValidate
 	}

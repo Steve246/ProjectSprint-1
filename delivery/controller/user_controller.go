@@ -5,7 +5,6 @@ import (
 	"7Zero4/model/dto"
 	"7Zero4/usecase"
 	"7Zero4/utils"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -53,9 +52,9 @@ func (u *UserController) userRegister(c *gin.Context) {
 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
 
 		u.Failed(c, utils.ServerError())
+		return
 
-	} else {
-
+	}
 	token, err := u.ucRegist.RegisterUser(bodyRequest)
 	if err != nil {
 		// Email conflict exist
@@ -97,7 +96,7 @@ func (u *UserController) userRegister(c *gin.Context) {
 }
 
 func (u *UserController) requestLogin(c *gin.Context) {
-	var bodyRequest dto.RequestLoginBody
+	// var bodyRequest dto.RequestLoginBody
 }
 
 // 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
