@@ -26,31 +26,31 @@ func (u *userRepository) ValidateUser(email string, name string, password string
 
 	if user == "register" {
 		if email == "" {
-			return utils.ErrEmailNull
+			return utils.ReqBodyNotValidError()
 		}
 
 		emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
 		match, _ := regexp.MatchString(emailRegex, email)
 		if !match {
-			return utils.ErrInvalidEmail
+			return utils.ReqBodyNotValidError()
 		}
 
 		// Check if name is not null and length is between 5 and 50
 		if name == "" {
-			return utils.ErrNameNull
+			return utils.ReqBodyNotValidError()
 		}
 		nameLength := len(strings.TrimSpace(name))
 		if nameLength < 5 || nameLength > 50 {
-			return utils.ErrInvalidName
+			return utils.ReqBodyNotValidError()
 		}
 
 		// Check if password is not null and length is between 5 and 15
 		if password == "" {
-			return utils.ErrPasswordNull
+			return utils.ReqBodyNotValidError()
 		}
 		passwordLength := len(password)
 		if passwordLength < 5 || passwordLength > 15 {
-			return utils.ErrInvalidPassword
+			return utils.ReqBodyNotValidError()
 		}
 
 		return nil
@@ -58,13 +58,13 @@ func (u *userRepository) ValidateUser(email string, name string, password string
 
 	if user == "login" {
 		if email == "" {
-			return utils.ErrEmailNull
+			return utils.ReqBodyNotValidError()
 		}
 
 		emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
 		match, _ := regexp.MatchString(emailRegex, email)
 		if !match {
-			return utils.ErrInvalidEmail
+			return utils.ReqBodyNotValidError()
 		}
 
 		// Check if name is not null and length is between 5 and 50
@@ -78,11 +78,11 @@ func (u *userRepository) ValidateUser(email string, name string, password string
 
 		// Check if password is not null and length is between 5 and 15
 		if password == "" {
-			return utils.ErrPasswordNull
+			return utils.ReqBodyNotValidError()
 		}
 		passwordLength := len(password)
 		if passwordLength < 5 || passwordLength > 15 {
-			return utils.ErrInvalidPassword
+			return utils.ReqBodyNotValidError()
 		}
 
 		return nil

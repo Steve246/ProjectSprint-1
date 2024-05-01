@@ -28,8 +28,7 @@ func (u *UserController) userLogin(c *gin.Context) {
 
 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errorCode": "400",
-			"message":   "Bad Request: request body is empty or in wrong format",
+			"message": err.Error(),
 		})
 	} else {
 		err := u.ucLogin.LoginUser(bodyRequest)
@@ -90,30 +89,23 @@ func (u *UserController) userRegister(c *gin.Context) {
 
 	// Parse the request body into bodyRequest
 	if err := c.ShouldBindJSON(&bodyRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"errorCode": "400",
-			"message":   "Bad Request: request body is empty or in wrong format",
-		})
-		return
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"message": err.Error(),
+		// })
+		utils.ServerError()
+
 	} else {
 
 		err := u.ucRegist.RegistUser(bodyRequest)
 
 		if err != nil {
 			// Check if the error is from RegisUser usecase
-			if utils.IsValidationError(err) {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"errorCode": "400",
-					"message":   "RegisUser Error: " + err.Error(),
-				})
+			if err != nil {
+				u.Failed(c, err)
 				return
 			}
 			// Handle StatusInternalServerError (500)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"errorCode": "500",
-				"message":   "Internal Server Error: " + err.Error(),
-			})
-			return
+			utils.ServerError()
 		}
 
 		successData := dto.SuccessRegistBody{
@@ -123,13 +115,19 @@ func (u *UserController) userRegister(c *gin.Context) {
 			AccessToken: "qwertyuiopasdfghjklzxcvbnm", // This should be the actual access token
 		}
 
-		c.JSON(http.StatusCreated, gin.H{
+		// c.JSON(http.StatusCreated, gin.H{
+		// 	"Message": "User logged successfully",
+		// 	"data":    successData,
+		// })
+
+		data := gin.H{
 			"Message": "User logged successfully",
 			"data":    successData,
-		})
+		}
+
+		u.Success(c, data)
 
 	}
-
 }
 
 func (u *UserController) requestRegist(c *gin.Context) {

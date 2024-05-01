@@ -41,7 +41,7 @@ func (p *userRegistrationUsecase) RegistUser(reqUserData dto.RequestRegistBody) 
 	fmt.Println("ini found --> ", found)
 
 	if found {
-		return utils.ErrDuplicateValueFound
+		return utils.EmailFoundError()
 	}
 
 	// insert data
@@ -52,7 +52,7 @@ func (p *userRegistrationUsecase) RegistUser(reqUserData dto.RequestRegistBody) 
 
 	// hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registBody.Password), bcrypt.DefaultCost)
 	if errHashed != nil {
-		return utils.InvalidTypeFormat()
+		return utils.PasswordCannotBeEncodeError()
 	}
 
 	// Convert hashedPassword from []byte to string
