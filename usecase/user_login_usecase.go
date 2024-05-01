@@ -35,29 +35,17 @@ func (u *userLoginUsecase) LoginUser(reqLoginBody dto.RequestLoginBody) error {
 		return errValidate
 	}
 
-	// errEmail := u.userRepo.FindByEmail(reqLoginBody.Email)
-	// // equivalent to errEmail != true
-	// if !errEmail {
-	// 	return utils.ErrEmailCannotFound
-	// }
-
-	// cek apakah user udh register, atau blm, kalau blm error
-	var selected model.User
-	err := u.userRepo.FindBy(&selected, model.User{Email: reqLoginBody.Email})
-	if err != nil {
-		return utils.ErrUserNotFound
-	}
-
 	dbPass, errdbPass := u.userRepo.FindPasswordByEmail(reqLoginBody.Email)
 
+	fmt.Println("ini error dari findPasswordByEmail --> ", errdbPass)
 	if errdbPass != nil {
-		return utils.ErrPasswordCannotFound
+		return utils.UserNotFoundError()
 	}
 
 	errPassword := u.passWordRepo.VerifyPassword([]byte(dbPass.Password), []byte(reqLoginBody.Password))
 
 	if errPassword != nil {
-		return utils.ErrPasswordNotMatch
+		return utils.PasswordWrongError()
 	}
 
 	return nil

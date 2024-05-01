@@ -27,46 +27,13 @@ func (u *UserController) userLogin(c *gin.Context) {
 	var bodyRequest dto.RequestLoginBody
 
 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		u.Failed(c, utils.ServerError())
+
 	} else {
 		err := u.ucLogin.LoginUser(bodyRequest)
 
 		if err != nil {
-			// Check if the error is from RegisUser usecase
-			if utils.IsValidationError(err) {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"errorCode": "400",
-					"message":   "LoginUser Error: " + err.Error(),
-				})
-				return
-			}
-
-			if err == utils.ErrEmailCannotFound {
-
-				c.JSON(http.StatusBadRequest, gin.H{
-					"errorCode": "400",
-					"message":   "LoginUser Error: " + err.Error(),
-				})
-				return
-
-			}
-
-			if err == utils.ErrUserNotFound {
-
-				c.JSON(http.StatusBadRequest, gin.H{
-					"errorCode": "404",
-					"message":   "LoginUser Error: " + err.Error(),
-				})
-				return
-
-			}
-			// Handle StatusInternalServerError (500)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"errorCode": "500",
-				"message":   "Internal Server Error: " + err.Error(),
-			})
+			u.Failed(c, err)
 			return
 		}
 
@@ -77,22 +44,16 @@ func (u *UserController) userLogin(c *gin.Context) {
 			AccessToken: "qwertyuiopasdfghjklzxcvbnm", // This should be the actual access token
 		}
 
-		c.JSON(http.StatusCreated, gin.H{
-			"Message": "User registered successfully",
-			"data":    successData,
-		})
+		u.Success(c, successData)
 	}
 }
 
 func (u *UserController) userRegister(c *gin.Context) {
 	var bodyRequest dto.RequestRegistBody
 
-	// Parse the request body into bodyRequest
-	if err := c.ShouldBindJSON(&bodyRequest); err != nil {
-		// c.JSON(http.StatusBadRequest, gin.H{
-		// 	"message": err.Error(),
-		// })
-		utils.ServerError()
+	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
+
+		u.Failed(c, utils.ServerError())
 
 	} else {
 
@@ -100,12 +61,9 @@ func (u *UserController) userRegister(c *gin.Context) {
 
 		if err != nil {
 			// Check if the error is from RegisUser usecase
-			if err != nil {
-				u.Failed(c, err)
-				return
-			}
-			// Handle StatusInternalServerError (500)
-			utils.ServerError()
+			u.Failed(c, err)
+			return
+
 		}
 
 		successData := dto.SuccessRegistBody{
@@ -121,7 +79,7 @@ func (u *UserController) userRegister(c *gin.Context) {
 		// })
 
 		data := gin.H{
-			"Message": "User logged successfully",
+			"Message": "User register successfully",
 			"data":    successData,
 		}
 

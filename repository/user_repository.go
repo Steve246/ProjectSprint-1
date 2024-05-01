@@ -93,18 +93,25 @@ func (u *userRepository) ValidateUser(email string, name string, password string
 }
 
 func (u *userRepository) FindPasswordByEmail(email string) (model.User, error) {
+	// var user model.User
+	// result := u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
+
+	// fmt.Println("ini hasil result Password By Email --> ", result.Error)
+
+	// if user.Email == "" {
+	// 	return user, result.Error
+
+	// }
+
+	// return user, nil
+
 	var user model.User
-	result := u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
-
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return user, nil
-		} else {
-			return user, result.Error
-		}
+	u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
+	if (user == model.User{}) {
+		return model.User{}, errors.New("User not found")
 	}
-
 	return user, nil
+
 }
 
 func (u *userRepository) Create(newData interface{}) error {

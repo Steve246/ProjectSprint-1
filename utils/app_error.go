@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -16,50 +15,7 @@ func (e AppError) Error() string {
 	return fmt.Sprintf("type: %d, code: %s, err: %s", e.ErrorType, e.ErrorCode, e.ErrorMessage)
 }
 
-// error code baru
-
-var (
-
-	// REGISTER
-	ErrEmailNull           = errors.New("email cannot be null")
-	ErrInvalidEmail        = errors.New("invalid email format")
-	ErrNameNull            = errors.New("name cannot be null")
-	ErrInvalidName         = errors.New("name must be between 5 and 50 characters")
-	ErrPasswordNull        = errors.New("password cannot be null")
-	ErrInvalidPassword     = errors.New("password must be between 5 and 15 characters")
-	ErrDuplicateValueFound = errors.New("duplicate Email is found")
-
-	// LOGIN
-
-	ErrEmailCannotFound    = errors.New("email cannot be found")
-	ErrPasswordCannotFound = errors.New("password cannot be found")
-
-	ErrPasswordNotMatch = errors.New("password not match")
-
-	ErrUserNotFound = errors.New("user not found")
-)
-
-func IsValidationError(err error) bool {
-	return errors.Is(err, ErrEmailNull) ||
-		errors.Is(err, ErrInvalidEmail) ||
-		errors.Is(err, ErrNameNull) ||
-		errors.Is(err, ErrInvalidName) ||
-		errors.Is(err, ErrPasswordNull) ||
-		errors.Is(err, ErrInvalidPassword)
-
-}
-
-// ini yg baru
-
 // register
-
-func PasswordCannotBeEncodeError() error {
-	return AppError{
-		ErrorCode:    "400",
-		ErrorMessage: "Password cannot be encode",
-		ErrorType:    http.StatusBadRequest,
-	}
-}
 
 func NameFoundError() error {
 	return AppError{
@@ -94,6 +50,14 @@ func ServerError() error {
 }
 
 // login
+
+func PasswordCannotBeEncodeError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Password cannot be encode",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
 
 func UserNotFoundError() error {
 	return AppError{
