@@ -16,8 +16,6 @@ import (
 type UserLoginUseCase interface {
 	VerifyLoginOtp(reLoginBody dto.VerifyLoginBody) (dto.VerifyLoginBodyResponse, error)
 	RequestLogin(rqLoginBody dto.RequestLoginBody) error
-
-	LoginUser(reqLoginBody dto.RequestLoginBody) error
 }
 
 type userLoginUsecase struct {
@@ -28,36 +26,12 @@ type userLoginUsecase struct {
 	passWordRepo repository.PasswordRepository
 }
 
-func (u *userLoginUsecase) LoginUser(reqLoginBody dto.RequestLoginBody) error {
-
-	errValidate := u.userRepo.ValidateUser(reqLoginBody.Email, "", reqLoginBody.Password, "login")
-	if errValidate != nil {
-		return errValidate
-	}
-
-	dbPass, errdbPass := u.userRepo.FindPasswordByEmail(reqLoginBody.Email)
-
-	fmt.Println("ini error dari findPasswordByEmail --> ", errdbPass)
-	if errdbPass != nil {
-		return utils.UserNotFoundError()
-	}
-
-	errPassword := u.passWordRepo.VerifyPassword([]byte(dbPass.Password), []byte(reqLoginBody.Password))
-
-	if errPassword != nil {
-		return utils.PasswordWrongError()
-	}
-
-	return nil
-
-}
-
 func (u *userLoginUsecase) RequestLogin(rqLoginBody dto.RequestLoginBody) error {
 
 	errEmail := u.userRepo.FindByEmail(rqLoginBody.Email)
 	// equivalent to errEmail != true
 	if !errEmail {
-		return utils.DataDuplicateError()
+		return utils.DataNotFoundError()
 	}
 
 	dbPass, errdbPass := u.userRepo.FindPasswordByEmail(rqLoginBody.Email)

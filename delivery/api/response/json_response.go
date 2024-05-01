@@ -12,24 +12,13 @@ type JsonResponse struct {
 	response       Response
 }
 
-type JsonResponseSuccess struct {
-	c              *gin.Context
-	httpStatusCode int
-	response       ResponseSuccess
-}
-
-// Send implements AppHttpResponse.
-func (j *JsonResponseSuccess) Send() {
-	j.c.JSON(j.httpStatusCode, j.response)
-}
-
 func (j *JsonResponse) Send() {
 	j.c.JSON(j.httpStatusCode, j.response)
 }
 
 func NewSuccessJsonResponse(c *gin.Context, data interface{}) AppHttpResponse {
 	httpStatusCode, resp := NewSuccessMessage(data)
-	return &JsonResponseSuccess{
+	return &JsonResponse{
 		c,
 		httpStatusCode,
 		resp,
