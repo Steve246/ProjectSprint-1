@@ -3,13 +3,17 @@ package repository
 import (
 	"7Zero4/config"
 	"context"
+	"encoding/hex"
 	"errors"
 	"fmt"
+	"math/rand"
 
 	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt"
+	conn "github.com/spf13/viper"
+	"gorm.io/gorm"
 )
 
 type TokenRepository interface {
@@ -18,11 +22,30 @@ type TokenRepository interface {
 	StoreToken(key string, value interface{}, expTime time.Duration) error
 	StoreTokenForever(key string, value interface{}) error
 	FetchToken(key string) (string, error)
+
+	CreateTokenV2(email string, length int) (string, error)
 }
 
 type tokenRepository struct {
 	tokenConfig config.TokenConfig
 	redisClient *redis.Client
+	db          *gorm.DB
+}
+
+func (t *tokenRepository) CreateTokenV2(email string, length int) (string, error) {
+	b := make([]byte, length)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+
+	token := hex.EncodeToString(b)
+	expire := conn.GetInt64("token_auth.expire")
+	expireDate := time.Now().Add(time.Second * time.Duration(expire))
+	result := t.db.Exec("INSERT INTO authentication(user_email,token_auth,expire) VALUES(?,?,?)", email, token, expireDate)
+	if result.Error != nil {
+		return "", result.Error
+	}
+	return token, nil
 }
 
 // StoreTokenForever implements TokenRepository
@@ -77,30 +100,10 @@ func (t *tokenRepository) FetchToken(key string) (string, error) {
 	return t.redisClient.Get(context.Background(), key).Result()
 }
 
-// func StoreAccessToken(userName string, tokenDetail *model.TokenDetails) error {
-// 	at := time.Unix(tokenDetail.AtExpires, 0)
-// 	now := time.Now()
-// 	err := config.TokenConfig.Client.Set(context.Background(), tokenDetail.AccessUuid, userName, at.Sub(now)).Err()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-// func FetchAccessToken(accessDetail *model.AccessDetail) (string, error) {
-// 	if accessDetail != nil {
-// 		result, err := config.TokenConfig.Client.Get(context.Background(), accessDetail.AccessUiid).Result()
-// 		if err != nil {
-// 			return "", err
-// 		}
-// 		return result, nil
-// 	} else {
-// 		return "", errors.New("invalid access")
-// 	}
-// }
-
-func NewTokenRepository(redisClient *redis.Client, tokenConfig config.TokenConfig) TokenRepository {
+func NewTokenRepository(redisClient *redis.Client, tokenConfig config.TokenConfig, dbClient *gorm.DB) TokenRepository {
 	repo := new(tokenRepository)
 	repo.redisClient = redisClient
 	repo.tokenConfig = tokenConfig
+	repo.db = dbClient
 	return repo
 }

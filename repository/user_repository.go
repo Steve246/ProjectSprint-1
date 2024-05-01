@@ -12,7 +12,7 @@ import (
 
 type UserRepository interface {
 	FindPasswordByEmail(email string) (model.User, error)
-	Create(newData interface{}) error
+	Register(newData model.User) error
 	FindByEmail(email string) bool
 	FindBy(selected interface{}, by interface{}) error
 	ValidateUser(email string, name string, password string) error
@@ -69,22 +69,18 @@ func (u *userRepository) FindPasswordByEmail(email string) (model.User, error) {
 	return user, nil
 }
 
-func (u *userRepository) Create(newData interface{}) error {
-	result := u.db.Create(newData)
+func (u *userRepository) Register(data model.User) error {
+	result := u.db.Exec("INSERT INTO users (created_at,updated_at,name,email,password,registration_date) VALUES (?,?,?,?,?,?)", data.RegistrationDate, data.RegistrationDate, data.Name, data.Email, data.Password, data.RegistrationDate)
 	return result.Error
 }
 
 func (u *userRepository) FindByEmail(email string) bool {
-	var user model.User
-	result := u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
-	if result.RowsAffected == 0 {
-		return false
-	}
-	return true
+	result := u.db.Exec("SELECT * FROM users WHERE email = ?", email)
+	return result.RowsAffected != 0
 }
 
 func (u *userRepository) FindBy(selected interface{}, by interface{}) error {
-	result := u.db.Raw("SELECT * FROM users WHERE ?", by).Scan(selected)
+	result := u.db.Exec("SELECT * FROM users WHERE ?", by).Scan(selected)
 	return result.Error
 }
 

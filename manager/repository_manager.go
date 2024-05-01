@@ -31,7 +31,7 @@ func (r *repositoryManager) MailRepo() repository.MailRepository {
 }
 
 func (r *repositoryManager) TokenRepo() repository.TokenRepository {
-	return repository.NewTokenRepository(r.infra.RedisClient(), r.infra.TokenConfig())
+	return repository.NewTokenRepository(r.infra.RedisClient(), r.infra.TokenConfig(), r.infra.SqlDb())
 }
 
 func NewRepositoryManager(infra Infra) RepositoryManager {

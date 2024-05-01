@@ -8,13 +8,11 @@ import (
 	"log"
 
 	"strconv"
-	"time"
 
 	"github.com/golang-jwt/jwt"
 )
 
 type TokenUsecase interface {
-	CreateAccessToken(authToken *dto.AuthToken, duration time.Duration) (string, error)
 	VerifyAccessToken(tokenString string) (*dto.AuthToken, error)
 	FetchAccessToken(accessUuid string) (uint, error)
 }
@@ -26,22 +24,6 @@ type tokenUsecase struct {
 type MyClaims struct {
 	jwt.StandardClaims
 	AuthToken dto.AuthToken
-}
-
-func (t *tokenUsecase) CreateAccessToken(authToken *dto.AuthToken, duration time.Duration) (string, error) {
-	now := time.Now().UTC()
-	end := now.Add(duration)
-
-	return t.tokenRepo.CreateToken(func(appName string) jwt.Claims {
-		return MyClaims{
-			StandardClaims: jwt.StandardClaims{
-				Issuer:    appName,
-				IssuedAt:  now.Unix(),
-				ExpiresAt: end.Unix(),
-			},
-			AuthToken: *authToken,
-		}
-	})
 }
 
 func (t *tokenUsecase) VerifyAccessToken(tokenString string) (*dto.AuthToken, error) {

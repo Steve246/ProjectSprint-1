@@ -13,7 +13,7 @@ type usecaseManager struct {
 }
 
 func (u *usecaseManager) RegistUsecase() usecase.UserRegistrationUsecase {
-	return usecase.NewUserRegistrationUsecase(u.repoManager.OtpRepo(), u.repoManager.UserRepo(), u.repoManager.MailRepo(), u.repoManager.PasswordRepo())
+	return usecase.NewUserRegistrationUsecase(u.repoManager.UserRepo(), u.repoManager.MailRepo(), u.repoManager.PasswordRepo(), u.repoManager.TokenRepo())
 
 }
 

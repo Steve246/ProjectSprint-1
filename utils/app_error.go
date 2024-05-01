@@ -34,8 +34,11 @@ func IsValidationError(err error) bool {
 		errors.Is(err, ErrNameNull) ||
 		errors.Is(err, ErrInvalidName) ||
 		errors.Is(err, ErrPasswordNull) ||
-		errors.Is(err, ErrInvalidPassword) ||
-		errors.Is(err, ErrDuplicateValueFound)
+		errors.Is(err, ErrInvalidPassword)
+}
+
+func IsErrDuplicateValueFound(err error) bool {
+	return errors.Is(err, ErrDuplicateValueFound)
 }
 
 func EmailDuplicate() error {

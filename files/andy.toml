@@ -1,12 +1,12 @@
 [database]
     host="localhost"
     port=5432
-    user="steven"
-    password="12345678"
-    db_name="7Zero_db"
+    user="admin_local"
+    password="root"
+    db_name="zerofour"
 
 [api]
-    url="192.168.100.41:8888"
+    url="localhost:8888"
 
 [redis]
     address="localhost:6379"
@@ -15,3 +15,4 @@
 
 [token_auth]
     expire = 28800 # in seconds
+

@@ -15,14 +15,9 @@ type UserController struct {
 	routerDev *gin.RouterGroup
 	ucLogin   usecase.UserLoginUseCase
 	ucRegist  usecase.UserRegistrationUsecase
-	// ucRegist  usecase.PartnerRegistrationUsecase
-	// ucGetUser usecase.GetDataUserUsecase
+	ucToken   usecase.TokenUsecase
 	api.BaseApi
 }
-
-// FIXME: Regis sama Login gak pake OTP
-
-// TODO: tambain error code
 
 func (u *UserController) userRegister(c *gin.Context) {
 	var bodyRequest dto.RequestRegistBody
@@ -36,16 +31,26 @@ func (u *UserController) userRegister(c *gin.Context) {
 		return
 	}
 
-	err := u.ucRegist.RegistUser(bodyRequest)
+	token, err := u.ucRegist.RegisterUser(bodyRequest)
 	if err != nil {
-		// Check if the error is from RegisUser usecase
-		if utils.IsValidationError(err) {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"errorCode": "400",
-				"message":   "RegisUser Error: " + err.Error(),
+		// Email conflict exist
+		if utils.IsErrDuplicateValueFound(err) {
+			c.JSON(http.StatusConflict, gin.H{
+				"errorCode": "409",
+				"message":   "Email already registered",
 			})
 			return
 		}
+
+		// Validation Error
+		if utils.IsValidationError(err) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"errorCode": "400",
+				"message":   "Register user error: " + err.Error(),
+			})
+			return
+		}
+
 		// Handle StatusInternalServerError (500)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"errorCode": "500",
@@ -55,10 +60,9 @@ func (u *UserController) userRegister(c *gin.Context) {
 	}
 
 	successData := dto.SuccessRegistBody{
-		Email: bodyRequest.Email,
-		Name:  bodyRequest.Name,
-		// TODO: ini bikin token logic, sementara masih dummy
-		AccessToken: "qwertyuiopasdfghjklzxcvbnm", // This should be the actual access token
+		Email:       bodyRequest.Email,
+		Name:        bodyRequest.Name,
+		AccessToken: token,
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -66,42 +70,6 @@ func (u *UserController) userRegister(c *gin.Context) {
 		"data":    successData,
 	})
 }
-
-// func (u *UserController) requestRegist(c *gin.Context) {
-// 	var bodyRequest dto.RequestRegistBody
-
-// 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
-// 		fmt.Print("Masuk sini")
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"message": err.Error(),
-// 		})
-// 	} else {
-// 		// fmt.Printf("ini isi bodyRequest --> %s", bodyRequest.Email)
-// 		err := u.ucRegist.RequestRegist(bodyRequest)
-// 		if err != nil {
-// 			u.Failed(c, err)
-// 			return
-// 		}
-// 		u.Success(c, nil)
-// 	}
-// }
-
-// func (u *UserController) verifyRegist(c *gin.Context) {
-// 	var verifOtpBody dto.VerifyRegistBody
-
-// 	if err := u.ParseRequestBody(c, &verifOtpBody); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"message": err.Error(),
-// 		})
-// 	} else {
-// 		err := u.ucRegist.VerifyRegist(verifOtpBody)
-// 		if err != nil {
-// 			u.Failed(c, err)
-// 			return
-// 		}
-// 		u.Success(c, nil)
-// 	}
-// }
 
 func (u *UserController) requestLogin(c *gin.Context) {
 	var bodyRequest dto.RequestLoginBody

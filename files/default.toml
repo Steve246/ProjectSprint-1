@@ -12,3 +12,6 @@
     address="localhost:6379"
     password=""
     db=""
+
+[token_auth]
+    expire = 28800 # in seconds
