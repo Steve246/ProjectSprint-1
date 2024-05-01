@@ -5,6 +5,7 @@ import (
 	"7Zero4/model/dto"
 	"7Zero4/usecase"
 	"7Zero4/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -137,6 +138,7 @@ func (u *UserController) userRegister(c *gin.Context) {
 
 func (u *UserController) requestLogin(c *gin.Context) {
 	var bodyRequest dto.RequestLoginBody
+}
 
 // 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
 // 		c.JSON(http.StatusBadRequest, gin.H{
