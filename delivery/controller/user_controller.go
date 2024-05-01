@@ -5,6 +5,7 @@ import (
 	"7Zero4/model/dto"
 	"7Zero4/usecase"
 	"7Zero4/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -131,24 +132,24 @@ func (u *UserController) userRegister(c *gin.Context) {
 
 }
 
-// func (u *UserController) requestRegist(c *gin.Context) {
-// 	var bodyRequest dto.RequestRegistBody
+func (u *UserController) requestRegist(c *gin.Context) {
+	var bodyRequest dto.RequestRegistBody
 
-// 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
-// 		fmt.Print("Masuk sini")
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"message": err.Error(),
-// 		})
-// 	} else {
-// 		// fmt.Printf("ini isi bodyRequest --> %s", bodyRequest.Email)
-// 		err := u.ucRegist.RequestRegist(bodyRequest)
-// 		if err != nil {
-// 			u.Failed(c, err)
-// 			return
-// 		}
-// 		u.Success(c, nil)
-// 	}
-// }
+	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
+		fmt.Print("Masuk sini")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+	} else {
+		// fmt.Printf("ini isi bodyRequest --> %s", bodyRequest.Email)
+		err := u.ucRegist.RequestRegist(bodyRequest)
+		if err != nil {
+			u.Failed(c, err)
+			return
+		}
+		u.Success(c, nil)
+	}
+}
 
 // func (u *UserController) verifyRegist(c *gin.Context) {
 // 	var verifOtpBody dto.VerifyRegistBody

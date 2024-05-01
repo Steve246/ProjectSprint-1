@@ -49,6 +49,54 @@ func IsValidationError(err error) bool {
 
 }
 
+// ini yg baru
+
+// login
+
+func EmailFoundError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Email found inside Database",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func ReqBodyNotValidError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Didn't pass Validation",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func ServerError() error {
+	return AppError{
+		ErrorCode:    "500",
+		ErrorMessage: "Server Error",
+		ErrorType:    http.StatusInternalServerError,
+	}
+}
+
+// password
+
+func UserNotFoundError() error {
+	return AppError{
+		ErrorCode:    "404",
+		ErrorMessage: "User Not Found",
+		ErrorType:    http.StatusInternalServerError,
+	}
+}
+
+func PasswordWrongError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Password Is Wrong",
+		ErrorType:    http.StatusInternalServerError,
+	}
+}
+
+// ini yg lama
+
 func EmailDuplicate() error {
 	return AppError{
 		ErrorCode:    "409",
