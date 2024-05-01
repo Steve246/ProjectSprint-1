@@ -99,9 +99,8 @@ func (u *UserController) userRegister(c *gin.Context) {
 	})
 }
 
-func (u *UserController) requestLogin(c *gin.Context) {
-	// var bodyRequest dto.RequestLoginBody
-}
+// func (u *UserController) requestLogin(c *gin.Context) {
+// 	var bodyRequest dto.RequestLoginBody
 
 // 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
 // 		c.JSON(http.StatusBadRequest, gin.H{
