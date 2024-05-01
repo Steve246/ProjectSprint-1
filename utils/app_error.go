@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -16,30 +15,67 @@ func (e AppError) Error() string {
 	return fmt.Sprintf("type: %d, code: %s, err: %s", e.ErrorType, e.ErrorCode, e.ErrorMessage)
 }
 
-// error code baru
+// register
 
-var (
-	ErrEmailNull           = errors.New("email cannot be null")
-	ErrInvalidEmail        = errors.New("invalid email format")
-	ErrNameNull            = errors.New("name cannot be null")
-	ErrInvalidName         = errors.New("name must be between 5 and 50 characters")
-	ErrPasswordNull        = errors.New("password cannot be null")
-	ErrInvalidPassword     = errors.New("password must be between 5 and 15 characters")
-	ErrDuplicateValueFound = errors.New("duplicate Email is found")
-)
-
-func IsValidationError(err error) bool {
-	return errors.Is(err, ErrEmailNull) ||
-		errors.Is(err, ErrInvalidEmail) ||
-		errors.Is(err, ErrNameNull) ||
-		errors.Is(err, ErrInvalidName) ||
-		errors.Is(err, ErrPasswordNull) ||
-		errors.Is(err, ErrInvalidPassword)
+func NameFoundError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Name found inside Database",
+		ErrorType:    http.StatusBadRequest,
+	}
 }
 
-func IsErrDuplicateValueFound(err error) bool {
-	return errors.Is(err, ErrDuplicateValueFound)
+func EmailFoundError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Email found inside Database",
+		ErrorType:    http.StatusBadRequest,
+	}
 }
+
+func ReqBodyNotValidError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Didn't pass Validation",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func ServerError() error {
+	return AppError{
+		ErrorCode:    "500",
+		ErrorMessage: "Server Error",
+		ErrorType:    http.StatusInternalServerError,
+	}
+}
+
+// login
+
+func PasswordCannotBeEncodeError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Password cannot be encode",
+		ErrorType:    http.StatusBadRequest,
+	}
+}
+
+func UserNotFoundError() error {
+	return AppError{
+		ErrorCode:    "404",
+		ErrorMessage: "User Not Found",
+		ErrorType:    http.StatusInternalServerError,
+	}
+}
+
+func PasswordWrongError() error {
+	return AppError{
+		ErrorCode:    "400",
+		ErrorMessage: "Password Is Wrong",
+		ErrorType:    http.StatusInternalServerError,
+	}
+}
+
+// ini yg lama
 
 func EmailDuplicate() error {
 	return AppError{

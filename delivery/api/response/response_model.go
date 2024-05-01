@@ -17,15 +17,19 @@ type Response struct {
 	Data interface{} `json:"data,omitempty"`
 }
 
-func NewSuccessMessage(data interface{}) (httpStatusCode int, apiResponse Response) {
-	status := Status{
-		ResponseCode:    SuccessCode,
-		ResponseMessage: SuccessMessage,
-	}
+type ResponseSuccess struct {
+	Data interface{} `json:"data,omitempty"`
+}
+
+func NewSuccessMessage(data interface{}) (httpStatusCode int, apiResponse ResponseSuccess) {
+	// status := Status{
+	// 	ResponseCode:    SuccessCode,
+	// 	ResponseMessage: SuccessMessage,
+	// }
 	httpStatusCode = http.StatusOK
-	apiResponse = Response{
-		Status: status,
-		Data:   data,
+	apiResponse = ResponseSuccess{
+		// Status: status,
+		Data: data,
 	}
 	return
 }
