@@ -5,6 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO: hashed password harus bisa dipake di register & login
+
 type PasswordRepository interface {
 	HashAndSavePassword(userPass string) (string, error)
 	VerifyPassword(dbPass []byte, userPass []byte) error
