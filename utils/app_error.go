@@ -28,13 +28,10 @@ var (
 	ErrDuplicateValueFound = errors.New("duplicate Email is found")
 
 	// LOGIN
-
 	ErrEmailCannotFound    = errors.New("email cannot be found")
 	ErrPasswordCannotFound = errors.New("password cannot be found")
-
-	ErrPasswordNotMatch = errors.New("password not match")
-
-	ErrUserNotFound = errors.New("user not found")
+	ErrPasswordNotMatch    = errors.New("password not match")
+	ErrUserNotFound        = errors.New("user not found")
 )
 
 func IsValidationError(err error) bool {
@@ -51,20 +48,11 @@ func IsErrDuplicateValueFound(err error) bool {
 }
 
 // register
-
-func NameFoundError() error {
-	return AppError{
-		ErrorCode:    "400",
-		ErrorMessage: "Name found inside Database",
-		ErrorType:    http.StatusBadRequest,
-	}
-}
-
 func EmailFoundError() error {
 	return AppError{
-		ErrorCode:    "400",
+		ErrorCode:    "409",
 		ErrorMessage: "Email found inside Database",
-		ErrorType:    http.StatusBadRequest,
+		ErrorType:    http.StatusConflict,
 	}
 }
 
