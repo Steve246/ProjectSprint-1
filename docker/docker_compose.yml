@@ -1,20 +1,28 @@
-version: '1'
+
+version: '3'
 
 services:
-  db:
-    image: sevenzero_postgresql:1.0
+  postgres-db:
+    image: cat_project:3.0
+    build:
+      ./docker
+    volumes:
+      - ./postgres-db/pgdata/pgdata
+
     environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - PGDATA=/pgdata
+      - POSTGRES_DB=test_db
     ports:
       - "5432:5432"
-    mem_limit: 512m
-    restart: always
+    # mem_limit: 512m
+    # restart: always
+    # command: ["postgres", "-c", "log_statement=all"]
 
-  testredis:
-    image: redis:latest
-    ports:
-      - '6379:6379'
-    mem_limit: 128m
-    restart: always
+  # testredis:
+  #   image: redis:latest
+  #   ports:
+  #     - '6379:6379'
+  #   mem_limit: 128m
+  #   restart: always
