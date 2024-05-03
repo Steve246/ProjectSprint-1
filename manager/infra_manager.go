@@ -14,14 +14,14 @@ import (
 
 type Infra interface {
 	SqlDb() *gorm.DB
-	RedisClient() *redis.Client
+	// RedisClient() *redis.Client
 	TokenConfig() config.TokenConfig
 	MailConfig() config.MailConfig
 }
 
 type infra struct {
-	dbResource  *gorm.DB
-	redisClient *redis.Client
+	dbResource *gorm.DB
+	// redisClient *redis.Client
 	tokenConfig config.TokenConfig
 	mailConfig  config.MailConfig
 }
@@ -30,9 +30,9 @@ func (i *infra) SqlDb() *gorm.DB {
 	return i.dbResource
 }
 
-func (i *infra) RedisClient() *redis.Client {
-	return i.redisClient
-}
+// func (i *infra) RedisClient() *redis.Client {
+// 	return i.redisClient
+// }
 
 func (i *infra) TokenConfig() config.TokenConfig {
 	return i.tokenConfig
@@ -50,14 +50,16 @@ func NewInfra(config config.Config) Infra {
 	}
 	log.Print("Database Connected!")
 
-	redisClient := initRedisClient(config.Address, config.Password, config.Database)
-	_, err2 := redisClient.Ping(redisClient.Context()).Result()
-	if err2 != nil {
-		log.Fatalf("Failed to load redis Error : %s", err2)
-	}
-	log.Print("Redis Connected!")
+	// redisClient := initRedisClient(config.Address, config.Password, config.Database)
+	// _, err2 := redisClient.Ping(redisClient.Context()).Result()
+	// if err2 != nil {
+	// 	log.Fatalf("Failed to load redis Error : %s", err2)
+	// }
+	// log.Print("Redis Connected!")
 
-	return &infra{dbResource: resource, redisClient: redisClient, tokenConfig: config.TokenConfig, mailConfig: config.MailConfig}
+	// return &infra{dbResource: resource, redisClient: redisClient, tokenConfig: config.TokenConfig, mailConfig: config.MailConfig}
+	return &infra{dbResource: resource, tokenConfig: config.TokenConfig, mailConfig: config.MailConfig}
+
 }
 
 func initDbResource(dataSourceName string) (*gorm.DB, error) {

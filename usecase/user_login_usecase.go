@@ -139,12 +139,25 @@ func (u *userLoginUsecase) VerifyLoginOtp(reLoginBody dto.VerifyLoginBody) (dto.
 	// return dto.VerifyLoginBodyResponse{}, nil
 }
 
-func NewUserLoginUsecase(otpRepo repository.OtpRepository,
+// func NewUserLoginUsecase(otpRepo repository.OtpRepository,
+// 	tokenRepo repository.TokenRepository,
+// 	userRepo repository.UserRepository,
+// 	mailRepo repository.MailRepository, passWordRepo repository.PasswordRepository) UserLoginUseCase {
+// 	usecase := new(userLoginUsecase)
+// 	usecase.otpRepo = otpRepo
+// 	usecase.tokenRepo = tokenRepo
+// 	usecase.userRepo = userRepo
+// 	usecase.mailRepo = mailRepo
+// 	usecase.passWordRepo = passWordRepo
+// 	return usecase
+// }
+
+func NewUserLoginUsecase(
 	tokenRepo repository.TokenRepository,
 	userRepo repository.UserRepository,
 	mailRepo repository.MailRepository, passWordRepo repository.PasswordRepository) UserLoginUseCase {
 	usecase := new(userLoginUsecase)
-	usecase.otpRepo = otpRepo
+
 	usecase.tokenRepo = tokenRepo
 	usecase.userRepo = userRepo
 	usecase.mailRepo = mailRepo

@@ -1,9 +1,9 @@
 [database]
     host="localhost"
     port=5432
-    user="myuser"
-    password="mypassword"
-    db_name="mydatabase"
+    user="project_steven"
+    password="secrect"
+    db_name="project_steven"
 
 [api]
     url="localhost:8888"

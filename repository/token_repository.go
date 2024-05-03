@@ -100,9 +100,16 @@ func (t *tokenRepository) FetchToken(key string) (string, error) {
 	return t.redisClient.Get(context.Background(), key).Result()
 }
 
-func NewTokenRepository(redisClient *redis.Client, tokenConfig config.TokenConfig, dbClient *gorm.DB) TokenRepository {
+// func NewTokenRepository(redisClient *redis.Client, tokenConfig config.TokenConfig, dbClient *gorm.DB) TokenRepository {
+// 	repo := new(tokenRepository)
+// 	repo.redisClient = redisClient
+// 	repo.tokenConfig = tokenConfig
+// 	repo.db = dbClient
+// 	return repo
+// }
+
+func NewTokenRepository(tokenConfig config.TokenConfig, dbClient *gorm.DB) TokenRepository {
 	repo := new(tokenRepository)
-	repo.redisClient = redisClient
 	repo.tokenConfig = tokenConfig
 	repo.db = dbClient
 	return repo
