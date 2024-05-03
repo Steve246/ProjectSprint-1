@@ -93,18 +93,6 @@ func (u *userRepository) ValidateUser(email string, name string, password string
 }
 
 func (u *userRepository) FindPasswordByEmail(email string) (model.User, error) {
-	// var user model.User
-	// result := u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
-
-	// fmt.Println("ini hasil result Password By Email --> ", result.Error)
-
-	// if user.Email == "" {
-	// 	return user, result.Error
-
-	// }
-
-	// return user, nil
-
 	var user model.User
 	u.db.Raw("SELECT * FROM users WHERE email = ?", email).Scan(&user)
 	if (user == model.User{}) {

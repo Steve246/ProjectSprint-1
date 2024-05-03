@@ -11,18 +11,14 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/golang-jwt/jwt"
 	conn "github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
 type TokenRepository interface {
-	CreateToken(makeClaims func(string) jwt.Claims) (string, error)
-	VerifyToken(tokenString string) (jwt.MapClaims, error)
-	StoreToken(key string, value interface{}, expTime time.Duration) error
-	StoreTokenForever(key string, value interface{}) error
 	FetchToken(key string) (string, error)
 
+	VerifyTokenV2(tokenString string) (bool, error)
 	CreateTokenV2(email string, length int) (string, error)
 }
 
@@ -48,65 +44,37 @@ func (t *tokenRepository) CreateTokenV2(email string, length int) (string, error
 	return token, nil
 }
 
-// StoreTokenForever implements TokenRepository
-func (t *tokenRepository) StoreTokenForever(key string, value interface{}) error {
-	result := t.redisClient.Set(context.Background(), key, value, 0)
-	return result.Err()
+type UserData struct {
+	Email  string `gorm:"column:user_email"`
+	Expire string `gorm:"column:expire"`
 }
 
-func (t *tokenRepository) CreateToken(makeClaims func(string) jwt.Claims) (string, error) {
-	claims := makeClaims(t.tokenConfig.ApplicationName)
-	token := jwt.NewWithClaims(
-		t.tokenConfig.JwtSigningMethod,
-		claims,
-	)
+func (t *tokenRepository) VerifyTokenV2(tokenString string) (bool, error) {
+	var userData UserData
 
-	newToken, err := token.SignedString([]byte(t.tokenConfig.JwtSignatureKey))
-	if err != nil {
-		return "", err
+	fmt.Println("VerifyTokenV2")
+	result := t.db.Raw(`SELECT user_email, expire FROM authentication WHERE token_auth = ? ORDER BY expire DESC LIMIT 1`, tokenString).Scan(&userData)
+	fmt.Println(userData)
+	if result.Error != nil {
+		return false, result.Error
 	}
-	return newToken, nil
-}
-
-func (t *tokenRepository) VerifyToken(tokenString string) (jwt.MapClaims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		method, ok := token.Method.(*jwt.SigningMethodHMAC)
-		if !ok {
-			return nil, fmt.Errorf("signing method invalid")
-		} else if method != t.tokenConfig.JwtSigningMethod {
-			return nil, fmt.Errorf("signing method invalid")
-		}
-		return []byte(t.tokenConfig.JwtSignatureKey), nil
-	})
-	if err != nil {
-		fmt.Println("Parsing failed..")
-		return nil, errors.New("tokenExpired")
+	if result.RowsAffected == 0 {
+		return false, errors.New("Unauthorized")
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid || claims["iss"] != t.tokenConfig.ApplicationName {
-		fmt.Println("Token invalid..")
-		return nil, err
+	// check expire
+	now := time.Now()
+	date, _ := time.Parse(time.RFC3339, userData.Expire)
+	if !now.Before(date) {
+		return false, errors.New("Token Expired")
 	}
-	return claims, nil
-}
 
-func (t *tokenRepository) StoreToken(key string, value interface{}, expTime time.Duration) error {
-	result := t.redisClient.Set(context.Background(), key, value, expTime)
-	return result.Err()
+	return true, nil
 }
 
 func (t *tokenRepository) FetchToken(key string) (string, error) {
 	return t.redisClient.Get(context.Background(), key).Result()
 }
-
-// func NewTokenRepository(redisClient *redis.Client, tokenConfig config.TokenConfig, dbClient *gorm.DB) TokenRepository {
-// 	repo := new(tokenRepository)
-// 	repo.redisClient = redisClient
-// 	repo.tokenConfig = tokenConfig
-// 	repo.db = dbClient
-// 	return repo
-// }
 
 func NewTokenRepository(tokenConfig config.TokenConfig, dbClient *gorm.DB) TokenRepository {
 	repo := new(tokenRepository)

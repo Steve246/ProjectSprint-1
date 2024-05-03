@@ -2,9 +2,6 @@ package middleware
 
 import (
 	"7Zero4/usecase"
-	"errors"
-	"fmt"
-	"log"
 	"net/http"
 
 	"strings"
@@ -26,13 +23,8 @@ type authTokenMiddleware struct {
 
 func checkBypassAPI(c *gin.Context) bool {
 	bypassAPI := []string{ // store API that dont need auth bearer
-		"/api/login",
-		"/api/register",
-		"/api/login/otp",
-		"/api/register/otp",
 		"/api/v1/user/register",
 		"/api/v1/user/login",
-		"/api/v1/cat", // remove this later (only testing)
 	}
 
 	for _, v := range bypassAPI {
@@ -51,50 +43,30 @@ func (a *authTokenMiddleware) RequiredToken() gin.HandlerFunc {
 			h := authHeader{}
 			if err := c.ShouldBindHeader(&h); err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{
-					"message": "Unauthrorized",
-				})
-				c.Abort()
-				return
-			}
-			tokenString := strings.Replace(h.AuthorizationHeader, "Bearer ", "", -1)
-			fmt.Println("token", tokenString)
-			if tokenString == "" {
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"message": "Unauthrorized",
+					"message": "Unauthorized",
 				})
 				c.Abort()
 				return
 			}
 
-			authToken, err := a.tokenUsecase.VerifyAccessToken(tokenString)
-			// ini := errors.New("tokenExpired")
-			if err != nil {
-				fmt.Println(err)
-				if errors.Is(err, err) {
-					c.JSON(http.StatusUnauthorized, gin.H{
-						"message": "Token Expired",
-					})
-					c.Abort()
-					return
-				}
+			tokenString := strings.Replace(h.AuthorizationHeader, "Bearer ", "", -1)
+			if tokenString == "" {
 				c.JSON(http.StatusUnauthorized, gin.H{
-					"message": "Unauthrorized",
+					"message": "Unauthorized",
 				})
 				c.Abort()
 				return
 			}
-			userId, err := a.tokenUsecase.FetchAccessToken(authToken.AccessUuid)
-			log.Println(userId, authToken.UserID, err)
-			if userId != authToken.UserID || err != nil {
+
+			pass, err := a.tokenUsecase.VerifyAccessToken(tokenString)
+			if err != nil || !pass {
 				c.JSON(http.StatusUnauthorized, gin.H{
-					"message": "Unauthrorized2",
+					"message": "Unauthorized",
 				})
 				c.Abort()
 				return
-			} else {
-				c.Set("authToken", *authToken)
-				c.Next()
 			}
+			c.Next()
 		}
 	}
 }

@@ -3,8 +3,6 @@ package usecase
 import (
 	"7Zero4/model/dto"
 	"7Zero4/repository"
-	"encoding/json"
-	"fmt"
 	"log"
 
 	"strconv"
@@ -13,7 +11,7 @@ import (
 )
 
 type TokenUsecase interface {
-	VerifyAccessToken(tokenString string) (*dto.AuthToken, error)
+	VerifyAccessToken(tokenString string) (bool, error)
 	FetchAccessToken(accessUuid string) (uint, error)
 }
 
@@ -26,17 +24,8 @@ type MyClaims struct {
 	AuthToken dto.AuthToken
 }
 
-func (t *tokenUsecase) VerifyAccessToken(tokenString string) (*dto.AuthToken, error) {
-	claims, err := t.tokenRepo.VerifyToken(tokenString)
-	if err != nil {
-		return nil, err
-	}
-	authTokenMap := claims["AuthToken"].(map[string]interface{})
-	jsonString, _ := json.Marshal(authTokenMap)
-	var authToken dto.AuthToken
-	json.Unmarshal(jsonString, &authToken)
-	fmt.Println("ini isian token decode --> ", authToken)
-	return &authToken, err
+func (t *tokenUsecase) VerifyAccessToken(tokenString string) (bool, error) {
+	return t.tokenRepo.VerifyTokenV2(tokenString)
 }
 
 func (t *tokenUsecase) FetchAccessToken(accessUuid string) (uint, error) {
