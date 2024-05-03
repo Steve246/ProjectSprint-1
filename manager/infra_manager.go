@@ -6,8 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-redis/redis/v8"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -88,10 +86,10 @@ func initDbResource(dataSourceName string) (*gorm.DB, error) {
 	return dbReturn, nil
 }
 
-func initRedisClient(address string, password string, db int) *redis.Client {
-	return redis.NewClient(&redis.Options{
-		Addr:     address,
-		Password: password,
-		DB:       db,
-	})
-}
+// func initRedisClient(address string, password string, db int) *redis.Client {
+// 	return redis.NewClient(&redis.Options{
+// 		Addr:     address,
+// 		Password: password,
+// 		DB:       db,
+// 	})
+// }

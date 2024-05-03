@@ -26,8 +26,12 @@ func (u *usecaseManager) TokenUsecase() usecase.TokenUsecase {
 // 	return usecase.NewUserLoginUsecase(u.repoManager.OtpRepo(), u.repoManager.TokenRepo(), u.repoManager.UserRepo(), u.repoManager.MailRepo(), u.repoManager.PasswordRepo())
 // }
 
+// func (u *usecaseManager) LoginUsecase() usecase.UserLoginUseCase {
+// 	return usecase.NewUserLoginUsecase(u.repoManager.TokenRepo(), u.repoManager.UserRepo(), u.repoManager.MailRepo(), u.repoManager.PasswordRepo())
+// }
+
 func (u *usecaseManager) LoginUsecase() usecase.UserLoginUseCase {
-	return usecase.NewUserLoginUsecase(u.repoManager.TokenRepo(), u.repoManager.UserRepo(), u.repoManager.MailRepo(), u.repoManager.PasswordRepo())
+	return usecase.NewUserLoginUsecase(u.repoManager.TokenRepo(), u.repoManager.UserRepo(), u.repoManager.PasswordRepo())
 }
 
 func (u *usecaseManager) CatUsecase() usecase.CatUseCase {
