@@ -13,6 +13,39 @@ type catRepository struct {
 
 type CatRepository interface {
 	InsertCat(data dto.RequestCreateCat) error
+	GetCats(data dto.CatGet) ([]dto.ResponseCat, error)
+}
+
+func (c *catRepository) GetCats(data dto.CatGet) ([]dto.ResponseCat, error) {
+
+	var cats []dto.ResponseCat
+
+	// Build SQL query
+	query := "SELECT * FROM cats WHERE 1=1"
+	var args []interface{}
+
+	// Add conditions based on the provided parameters
+	if data.ID != "" {
+		query += " AND id = ?"
+		args = append(args, data.ID)
+	}
+	if data.Race != "" {
+		query += " AND race = ?"
+		args = append(args, data.Race)
+	}
+	if data.Sex != "" {
+		query += " AND sex = ?"
+		args = append(args, data.Sex)
+	}
+	// Add other conditions...
+
+	// Execute raw SQL query
+	result := c.db.Raw(query, args...).Scan(&cats)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return cats, nil
 }
 
 func (c *catRepository) InsertCat(data dto.RequestCreateCat) error {

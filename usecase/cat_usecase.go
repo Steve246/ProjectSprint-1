@@ -16,28 +16,7 @@ type catUsecase struct {
 	sexWhitelist  map[string]struct{}
 }
 
-func NewCatUsecase(catRepo repository.CatRepository) CatUseCase {
-	usecase := new(catUsecase)
-	usecase.catRepo = catRepo
-	usecase.sexWhitelist = map[string]struct{}{
-		"male":   {},
-		"female": {},
-	}
-	usecase.raceWhitelist = map[string]struct{}{
-		"Persian":           {},
-		"Maine Coon":        {},
-		"Siamese":           {},
-		"Ragdoll":           {},
-		"Bengal":            {},
-		"Sphynx":            {},
-		"British Shorthair": {},
-		"Abyssinian":        {},
-		"Scottish Fold":     {},
-		"Birman":            {},
-	}
-
-	return usecase
-}
+// func (c *catUsecase) GetCat(data dto.CatGet)
 
 func (c *catUsecase) validateCatRequest(data dto.RequestCreateCat) bool {
 
@@ -82,4 +61,27 @@ func (c *catUsecase) CreateCat(data dto.RequestCreateCat) error {
 	}
 
 	return nil
+}
+
+func NewCatUsecase(catRepo repository.CatRepository) CatUseCase {
+	usecase := new(catUsecase)
+	usecase.catRepo = catRepo
+	usecase.sexWhitelist = map[string]struct{}{
+		"male":   {},
+		"female": {},
+	}
+	usecase.raceWhitelist = map[string]struct{}{
+		"Persian":           {},
+		"Maine Coon":        {},
+		"Siamese":           {},
+		"Ragdoll":           {},
+		"Bengal":            {},
+		"Sphynx":            {},
+		"British Shorthair": {},
+		"Abyssinian":        {},
+		"Scottish Fold":     {},
+		"Birman":            {},
+	}
+
+	return usecase
 }
