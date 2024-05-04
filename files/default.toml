@@ -6,7 +6,7 @@
     db_name="project_steven"
 
 [api]
-    url="localhost:8888"
+    url="localhost:8080"
 
 [redis]
     address="localhost:6379"
