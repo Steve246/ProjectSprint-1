@@ -44,7 +44,7 @@ func Server() *appServer {
 	return &appServer{
 		usecaseManager: usecaseManager,
 		engine:         router,
-		router:         router.Group("api/", middleware.NewAuthTokenMiddleware(usecaseManager.TokenUsecase()).RequiredToken()),
+		router:         router.Group("", middleware.NewAuthTokenMiddleware(usecaseManager.TokenUsecase()).RequiredToken()),
 
 		routerDev: router.Group("activation/"),
 		host:      host,

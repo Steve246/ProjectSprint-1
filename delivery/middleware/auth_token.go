@@ -23,8 +23,8 @@ type authTokenMiddleware struct {
 
 func checkBypassAPI(c *gin.Context) bool {
 	bypassAPI := []string{ // store API that dont need auth bearer
-		"/api/v1/user/register",
-		"/api/v1/user/login",
+		"/v1/user/register",
+		"/v1/user/login",
 	}
 
 	for _, v := range bypassAPI {
