@@ -48,7 +48,7 @@ func NewSuccessJsonResponse(c *gin.Context, data interface{}, detailMsg interfac
 		}
 	}
 
-	httpStatusCode, resp := NewSuccessMessageLogin(data, detailMsg)
+	httpStatusCode, resp := NewSuccessMessage(data, detailMsg)
 	return &JsonResponseSuccess{
 		c,
 		httpStatusCode,

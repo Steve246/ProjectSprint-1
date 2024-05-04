@@ -7,7 +7,7 @@ import (
 )
 
 type UserLoginUseCase interface {
-	LoginUser(reqLoginBody dto.RequestLoginBody) (string, error)
+	LoginUser(reqLoginBody dto.RequestLoginBody) (dto.SuccessLoginBody, error)
 }
 
 type userLoginUsecase struct {
@@ -16,30 +16,40 @@ type userLoginUsecase struct {
 	passWordRepo repository.PasswordRepository
 }
 
-func (u *userLoginUsecase) LoginUser(reqLoginBody dto.RequestLoginBody) (string, error) {
+func (u *userLoginUsecase) LoginUser(reqLoginBody dto.RequestLoginBody) (dto.SuccessLoginBody, error) {
+
+	var successData dto.SuccessLoginBody
 
 	errValidate := u.userRepo.ValidateUser(reqLoginBody.Email, "", reqLoginBody.Password, "login")
 	if errValidate != nil {
-		return "", errValidate
+		return successData, errValidate
 	}
 
 	dbPass, errdbPass := u.userRepo.FindPasswordByEmail(reqLoginBody.Email)
 	if errdbPass != nil {
-		return "", utils.UserNotFoundError()
+		return successData, utils.UserNotFoundError()
 	}
 
 	errPassword := u.passWordRepo.VerifyPassword([]byte(dbPass.Password), []byte(reqLoginBody.Password))
 	if errPassword != nil {
-		return "", utils.PasswordWrongError()
+		return successData, utils.PasswordWrongError()
 	}
 
 	// Get token auth
 	token, tokenErr := u.tokenRepo.CreateTokenV2(reqLoginBody.Email, 12)
 	if tokenErr != nil {
-		return "", tokenErr
+		return successData, tokenErr
 	}
 
-	return token, nil
+	// Populate the success data struct
+	successData = dto.SuccessLoginBody{
+		Email:       dbPass.Email,
+		Password:    dbPass.Password,
+		Name:        dbPass.Name, // You can replace this with the actual name you want to return
+		AccessToken: token,
+	}
+
+	return successData, nil
 }
 
 func NewUserLoginUsecase(

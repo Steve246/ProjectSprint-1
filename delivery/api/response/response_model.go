@@ -48,6 +48,19 @@ func NewSuccessMessageLogin(data interface{}, detailMsg interface{}) (httpStatus
 	return
 }
 
+func NewSuccessMessage(data interface{}, detailMsg interface{}) (httpStatusCode int, apiResponse ResponseSuccess) {
+	// status := Status{
+	// 	ResponseCode:    SuccessCode,
+	// 	ResponseMessage: SuccessMessage,
+	// }
+	httpStatusCode = http.StatusOK
+	apiResponse = ResponseSuccess{
+		Message: detailMsg,
+		Data:    data,
+	}
+	return
+}
+
 func NewErrorMessage(err error) (httpStatusCode int, apiResponse Response) {
 	var userError utils.AppError
 	var status Status

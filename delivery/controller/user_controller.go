@@ -30,20 +30,14 @@ func (u *UserController) userLogin(c *gin.Context) {
 		return
 	}
 
-	token, err := u.ucLogin.LoginUser(bodyRequest)
+	data, err := u.ucLogin.LoginUser(bodyRequest)
 	if err != nil {
 		u.Failed(c, err)
 		return
 	}
 
-	successData := dto.SuccessLoginBody{
-		Email:       bodyRequest.Email,
-		Password:    bodyRequest.Password,
-		AccessToken: token,
-	}
-
 	detailMsg := "User logged successfully "
-	u.Success(c, successData, detailMsg, "login")
+	u.Success(c, data, detailMsg, "login")
 }
 
 func (u *UserController) userRegister(c *gin.Context) {
