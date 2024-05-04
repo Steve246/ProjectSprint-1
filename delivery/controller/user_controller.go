@@ -26,7 +26,7 @@ func (u *UserController) userLogin(c *gin.Context) {
 	var bodyRequest dto.RequestLoginBody
 
 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
-		u.Failed(c, utils.ServerError())
+		u.Failed(c, utils.ReqBodyNotValidError())
 		return
 	}
 
@@ -50,7 +50,7 @@ func (u *UserController) userRegister(c *gin.Context) {
 	var bodyRequest dto.RequestRegistBody
 
 	if err := u.ParseRequestBody(c, &bodyRequest); err != nil {
-		u.Failed(c, utils.ServerError())
+		u.Failed(c, utils.ReqBodyNotValidError())
 		return
 	}
 
@@ -86,8 +86,6 @@ func (u *UserController) createCat(c *gin.Context) {
 			})
 			return
 		}
-
-		// add 401 for token
 
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"errorCode": "500",
