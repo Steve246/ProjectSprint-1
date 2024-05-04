@@ -22,7 +22,20 @@ type ResponseSuccess struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
-func NewSuccessMessage(data interface{}, detailMsg interface{}) (httpStatusCode int, apiResponse ResponseSuccess) {
+func NewSuccessMessageRegister(data interface{}, detailMsg interface{}) (httpStatusCode int, apiResponse ResponseSuccess) {
+	// status := Status{
+	// 	ResponseCode:    SuccessCode,
+	// 	ResponseMessage: SuccessMessage,
+	// }
+	httpStatusCode = http.StatusCreated
+	apiResponse = ResponseSuccess{
+		Message: detailMsg,
+		Data:    data,
+	}
+	return
+}
+
+func NewSuccessMessageLogin(data interface{}, detailMsg interface{}) (httpStatusCode int, apiResponse ResponseSuccess) {
 	// status := Status{
 	// 	ResponseCode:    SuccessCode,
 	// 	ResponseMessage: SuccessMessage,

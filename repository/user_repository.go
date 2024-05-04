@@ -4,6 +4,7 @@ import (
 	"7Zero4/model"
 	"7Zero4/utils"
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -29,7 +30,11 @@ func (u *userRepository) ValidateUser(email string, name string, password string
 			return utils.ReqBodyNotValidError()
 		}
 
-		emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
+		fmt.Println("ini email --> ", email)
+
+		// emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
+
+		emailRegex := `(?i)^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
 		match, _ := regexp.MatchString(emailRegex, email)
 		if !match {
 			return utils.ReqBodyNotValidError()
@@ -40,6 +45,9 @@ func (u *userRepository) ValidateUser(email string, name string, password string
 			return utils.ReqBodyNotValidError()
 		}
 		nameLength := len(strings.TrimSpace(name))
+
+		fmt.Println("ini nameLength --> ", nameLength)
+
 		if nameLength < 5 || nameLength > 50 {
 			return utils.ReqBodyNotValidError()
 		}
@@ -61,7 +69,7 @@ func (u *userRepository) ValidateUser(email string, name string, password string
 			return utils.ReqBodyNotValidError()
 		}
 
-		emailRegex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
+		emailRegex := `(?i)^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
 		match, _ := regexp.MatchString(emailRegex, email)
 		if !match {
 			return utils.ReqBodyNotValidError()

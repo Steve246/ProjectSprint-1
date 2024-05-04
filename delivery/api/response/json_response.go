@@ -27,13 +27,34 @@ func (j *JsonResponse) Send() {
 	j.c.JSON(j.httpStatusCode, j.response)
 }
 
-func NewSuccessJsonResponse(c *gin.Context, data interface{}, detailMsg interface{}) AppHttpResponse {
-	httpStatusCode, resp := NewSuccessMessage(data, detailMsg)
+func NewSuccessJsonResponse(c *gin.Context, data interface{}, detailMsg interface{}, condition string) AppHttpResponse {
+
+	if condition == "login" {
+		httpStatusCode, resp := NewSuccessMessageLogin(data, detailMsg)
+		return &JsonResponseSuccess{
+			c,
+			httpStatusCode,
+			resp,
+		}
+
+	}
+
+	if condition == "register" {
+		httpStatusCode, resp := NewSuccessMessageRegister(data, detailMsg)
+		return &JsonResponseSuccess{
+			c,
+			httpStatusCode,
+			resp,
+		}
+	}
+
+	httpStatusCode, resp := NewSuccessMessageLogin(data, detailMsg)
 	return &JsonResponseSuccess{
 		c,
 		httpStatusCode,
 		resp,
 	}
+
 }
 
 func NewErrorJsonResponse(c *gin.Context, err error) AppHttpResponse {

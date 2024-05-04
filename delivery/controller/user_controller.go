@@ -43,7 +43,7 @@ func (u *UserController) userLogin(c *gin.Context) {
 	}
 
 	detailMsg := "User logged successfully "
-	u.Success(c, successData, detailMsg)
+	u.Success(c, successData, detailMsg, "login")
 }
 
 func (u *UserController) userRegister(c *gin.Context) {
@@ -67,7 +67,7 @@ func (u *UserController) userRegister(c *gin.Context) {
 	}
 
 	detailMsg := "User register successfully "
-	u.Success(c, successData, detailMsg)
+	u.Success(c, successData, detailMsg, "register")
 
 }
 func (u *UserController) createCat(c *gin.Context) {
